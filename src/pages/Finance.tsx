@@ -1,0 +1,159 @@
+
+import { useState } from 'react';
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { TransactionCard } from '@/components/finance/TransactionCard';
+
+// Sample data
+const transactions = [
+  {
+    id: 1,
+    title: "حقوق ماهانه",
+    amount: 5200000,
+    date: "۱۴۰۴/۰۱/۳۱",
+    isIncome: true,
+    category: "درآمد"
+  },
+  {
+    id: 2,
+    title: "خرید مواد غذایی",
+    amount: 450000,
+    date: "۱۴۰۴/۰۲/۰۲",
+    isIncome: false,
+    category: "مواد غذایی"
+  },
+  {
+    id: 3,
+    title: "قبض برق",
+    amount: 185000,
+    date: "۱۴۰۴/۰۲/۰۵",
+    isIncome: false,
+    category: "قبوض"
+  },
+  {
+    id: 4,
+    title: "خرید کتاب",
+    amount: 120000,
+    date: "۱۴۰۴/۰۲/۰۸",
+    isIncome: false,
+    category: "تفریح و سرگرمی"
+  },
+  {
+    id: 5,
+    title: "درآمد فریلنسری",
+    amount: 1500000,
+    date: "۱۴۰۴/۰۲/۱۰",
+    isIncome: true,
+    category: "درآمد"
+  },
+  {
+    id: 6,
+    title: "اجاره خانه",
+    amount: 2800000,
+    date: "۱۴۰۴/۰۲/۱۲",
+    isIncome: false,
+    category: "مسکن"
+  }
+];
+
+export default function Finance() {
+  const [activeTab, setActiveTab] = useState("all");
+  
+  const filteredTransactions = activeTab === 'all' 
+    ? transactions 
+    : activeTab === 'income' 
+      ? transactions.filter(t => t.isIncome) 
+      : transactions.filter(t => !t.isIncome);
+  
+  // Calculate total income and expenses
+  const totalIncome = transactions
+    .filter(t => t.isIncome)
+    .reduce((sum, t) => sum + t.amount, 0);
+  
+  const totalExpenses = transactions
+    .filter(t => !t.isIncome)
+    .reduce((sum, t) => sum + t.amount, 0);
+  
+  const balance = totalIncome - totalExpenses;
+  
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-gray-900">امور مالی</h1>
+        <Button className="bg-lifeos-primary hover:bg-lifeos-secondary">
+          تراکنش جدید
+        </Button>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">موجودی</CardTitle>
+            <CardDescription>مانده حساب</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-gray-900">{balance.toLocaleString()} تومان</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">درآمد</CardTitle>
+            <CardDescription>کل درآمد ماه جاری</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-green-600">{totalIncome.toLocaleString()} تومان</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">هزینه‌ها</CardTitle>
+            <CardDescription>کل هزینه‌های ماه جاری</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-red-600">{totalExpenses.toLocaleString()} تومان</p>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>تراکنش‌ها</CardTitle>
+          <CardDescription>سوابق مالی اخیر</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="all" onValueChange={setActiveTab}>
+            <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsTrigger value="all">همه</TabsTrigger>
+              <TabsTrigger value="income">درآمد</TabsTrigger>
+              <TabsTrigger value="expense">هزینه</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value={activeTab} className="mt-4">
+              <div className="space-y-3">
+                {filteredTransactions.map(transaction => (
+                  <TransactionCard
+                    key={transaction.id}
+                    title={transaction.title}
+                    amount={transaction.amount}
+                    date={transaction.date}
+                    isIncome={transaction.isIncome}
+                    category={transaction.category}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
