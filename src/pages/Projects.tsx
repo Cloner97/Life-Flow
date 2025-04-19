@@ -12,9 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from '@/components/projects/ProjectCard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { CreateProjectDialog, Project } from '@/components/projects/CreateProjectDialog';
+import { toast } from "@/components/ui/sonner";
 
-// Sample data
-const projects = [
+// نمونه داده‌ها
+const projectsData = [
   {
     id: 1,
     title: "طراحی وب‌سایت شخصی",
@@ -68,15 +70,54 @@ const projects = [
 export default function Projects() {
   const [activeTab, setActiveTab] = useState("in-progress");
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [projects, setProjects] = useState<Project[]>(projectsData);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const filteredProjects = projects.filter(project => project.status === activeTab);
   const selectedProjectData = projects.find(project => project.id === selectedProject);
+  
+  const handleCreateProject = (newProject: Omit<Project, "id">) => {
+    // ایجاد یک شناسه جدید بر اساس بزرگترین شناسه موجود
+    const maxId = Math.max(...projects.map(project => project.id), 0);
+    const projectWithId = { ...newProject, id: maxId + 1 };
+    
+    setProjects([...projects, projectWithId]);
+  };
+  
+  const handleDeleteProject = () => {
+    if (!selectedProject) return;
+    
+    const updatedProjects = projects.filter(project => project.id !== selectedProject);
+    setProjects(updatedProjects);
+    setSelectedProject(null);
+    toast.success("پروژه با موفقیت حذف شد");
+  };
+  
+  const handleUpdateProjectStatus = () => {
+    if (!selectedProject) return;
+    
+    const updatedProjects = projects.map(project => {
+      if (project.id === selectedProject) {
+        const newStatus = project.status === "in-progress" ? "completed" : "in-progress";
+        const newProgress = newStatus === "completed" ? 100 : project.progress;
+        return { ...project, status: newStatus, progress: newProgress };
+      }
+      return project;
+    });
+    
+    setProjects(updatedProjects);
+    setSelectedProject(null);
+    toast.success("وضعیت پروژه با موفقیت به‌روزرسانی شد");
+  };
   
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">پروژه‌ها</h1>
-        <Button className="bg-lifeos-primary hover:bg-lifeos-secondary">
+        <Button 
+          className="bg-lifeos-primary hover:bg-lifeos-secondary"
+          onClick={() => setIsDialogOpen(true)}
+        >
           پروژه جدید
         </Button>
       </div>
@@ -158,14 +199,34 @@ export default function Projects() {
                 <Button variant="outline" onClick={() => setSelectedProject(null)}>
                   بستن
                 </Button>
-                <Button className="bg-lifeos-primary hover:bg-lifeos-secondary">
-                  ویرایش پروژه
+                <Button 
+                  variant="outline" 
+                  className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-700"
+                  onClick={handleDeleteProject}
+                >
+                  حذف پروژه
+                </Button>
+                <Button 
+                  className={selectedProjectData.status === 'completed' 
+                    ? 'bg-blue-500 hover:bg-blue-600' 
+                    : 'bg-green-500 hover:bg-green-600'}
+                  onClick={handleUpdateProjectStatus}
+                >
+                  {selectedProjectData.status === 'completed' 
+                    ? 'برگرداندن به در حال انجام' 
+                    : 'تکمیل پروژه'}
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
       )}
+      
+      <CreateProjectDialog 
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onCreateProject={handleCreateProject}
+      />
     </div>
   );
 }
