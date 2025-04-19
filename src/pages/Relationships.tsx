@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -8,8 +7,9 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { CreateContactDialog } from '@/components/relationships/CreateContactDialog';
+import { CreateEventDialog } from '@/components/relationships/CreateEventDialog';
 
 // Sample data
 const contacts = [
@@ -103,9 +103,7 @@ export default function Relationships() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">روابط</h1>
-        <Button className="bg-lifeos-primary hover:bg-lifeos-secondary">
-          {activeTab === 'contacts' ? 'مخاطب جدید' : 'رویداد جدید'}
-        </Button>
+        {activeTab === 'contacts' ? <CreateContactDialog /> : <CreateEventDialog />}
       </div>
       
       <Tabs defaultValue="contacts" onValueChange={setActiveTab}>
