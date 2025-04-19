@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -77,7 +76,6 @@ export default function Projects() {
   const selectedProjectData = projects.find(project => project.id === selectedProject);
   
   const handleCreateProject = (newProject: Omit<Project, "id">) => {
-    // ایجاد یک شناسه جدید بر اساس بزرگترین شناسه موجود
     const maxId = Math.max(...projects.map(project => project.id), 0);
     const projectWithId = { ...newProject, id: maxId + 1 };
     
@@ -110,6 +108,12 @@ export default function Projects() {
     toast.success("وضعیت پروژه با موفقیت به‌روزرسانی شد");
   };
   
+  const handleTabChange = (value: string) => {
+    if (value === "in-progress" || value === "completed") {
+      setActiveTab(value);
+    }
+  };
+  
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
@@ -122,7 +126,7 @@ export default function Projects() {
         </Button>
       </div>
       
-      <Tabs defaultValue="in-progress" onValueChange={setActiveTab}>
+      <Tabs defaultValue="in-progress" onValueChange={handleTabChange}>
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="in-progress">در حال انجام</TabsTrigger>
           <TabsTrigger value="completed">تکمیل شده</TabsTrigger>
