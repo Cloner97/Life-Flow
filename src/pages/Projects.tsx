@@ -16,7 +16,7 @@ import { CreateProjectDialog, Project } from '@/components/projects/CreateProjec
 import { toast } from "@/components/ui/sonner";
 
 // نمونه داده‌ها
-const projectsData = [
+const projectsData: Project[] = [
   {
     id: 1,
     title: "طراحی وب‌سایت شخصی",
@@ -68,7 +68,7 @@ const projectsData = [
 ];
 
 export default function Projects() {
-  const [activeTab, setActiveTab] = useState("in-progress");
+  const [activeTab, setActiveTab] = useState<"in-progress" | "completed">("in-progress");
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [projects, setProjects] = useState<Project[]>(projectsData);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -98,7 +98,7 @@ export default function Projects() {
     
     const updatedProjects = projects.map(project => {
       if (project.id === selectedProject) {
-        const newStatus = project.status === "in-progress" ? "completed" : "in-progress";
+        const newStatus: "in-progress" | "completed" = project.status === "in-progress" ? "completed" : "in-progress";
         const newProgress = newStatus === "completed" ? 100 : project.progress;
         return { ...project, status: newStatus, progress: newProgress };
       }
