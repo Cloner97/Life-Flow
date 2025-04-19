@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Card, 
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button"; // Add this import
 import { CreateContactDialog } from '@/components/relationships/CreateContactDialog';
 import { CreateEventDialog } from '@/components/relationships/CreateEventDialog';
 
