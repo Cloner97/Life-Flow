@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -10,8 +9,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { TransactionCard } from '@/components/finance/TransactionCard';
+import { calculateIncomeSplits } from '@/utils/financeSplitting';
+import { useToast } from "@/hooks/use-toast";
 
-// Sample data
 const transactions = [
   {
     id: 1,
@@ -65,6 +65,13 @@ const transactions = [
 
 export default function Finance() {
   const [activeTab, setActiveTab] = useState("all");
+  const { toast } = useToast();
+  
+  const [budgetAllocations, setBudgetAllocations] = useState({
+    savings: 0,
+    wants: 0,
+    needs: 0
+  });
   
   const filteredTransactions = activeTab === 'all' 
     ? transactions 
@@ -72,7 +79,6 @@ export default function Finance() {
       ? transactions.filter(t => t.isIncome) 
       : transactions.filter(t => !t.isIncome);
   
-  // Calculate total income and expenses
   const totalIncome = transactions
     .filter(t => t.isIncome)
     .reduce((sum, t) => sum + t.amount, 0);
@@ -83,16 +89,71 @@ export default function Finance() {
   
   const balance = totalIncome - totalExpenses;
   
+  const handleNewTransaction = () => {
+    const newIncome = 1000000;
+    const splits = calculateIncomeSplits(newIncome);
+    
+    setBudgetAllocations(prev => ({
+      savings: prev.savings + splits.savings,
+      wants: prev.wants + splits.wants,
+      needs: prev.needs + splits.needs
+    }));
+    
+    toast({
+      title: "تخصیص بودجه انجام شد",
+      description: `پس‌انداز: ${splits.savings.toLocaleString()} تومان\nخواسته‌ها: ${splits.wants.toLocaleString()} تومان\nنیازها: ${splits.needs.toLocaleString()} تومان`,
+    });
+  };
+  
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">امور مالی</h1>
-        <Button className="bg-lifeos-primary hover:bg-lifeos-secondary">
+        <Button 
+          className="bg-lifeos-primary hover:bg-lifeos-secondary"
+          onClick={handleNewTransaction}
+        >
           تراکنش جدید
         </Button>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">بودجه پس‌انداز</CardTitle>
+            <CardDescription>۲۰٪ درآمد</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-blue-600">
+              {budgetAllocations.savings.toLocaleString()} تومان
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">بودجه خواسته‌ها</CardTitle>
+            <CardDescription>۳۰٪ درآمد</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-purple-600">
+              {budgetAllocations.wants.toLocaleString()} تومان
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">بودجه نیازها</CardTitle>
+            <CardDescription>۵۰٪ درآمد</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-bold text-green-600">
+              {budgetAllocations.needs.toLocaleString()} تومان
+            </p>
+          </CardContent>
+        </Card>
+        
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">موجودی</CardTitle>
