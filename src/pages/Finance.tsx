@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { TransactionCard } from '@/components/finance/TransactionCard';
 import { calculateIncomeSplits } from '@/utils/financeSplitting';
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const transactions = [
   {
@@ -73,6 +74,8 @@ export default function Finance() {
     needs: 0
   });
   
+  const [showTransactionDialog, setShowTransactionDialog] = useState(false);
+  
   const filteredTransactions = activeTab === 'all' 
     ? transactions 
     : activeTab === 'income' 
@@ -89,20 +92,31 @@ export default function Finance() {
   
   const balance = totalIncome - totalExpenses;
   
-  const handleNewTransaction = () => {
-    const newIncome = 1000000;
-    const splits = calculateIncomeSplits(newIncome);
+  const handleNewTransaction = (data: any) => {
+    const newTransaction = {
+      id: transactions.length + 1,
+      title: data.description,
+      amount: data.amount,
+      date: data.date,
+      isIncome: data.type === "income",
+      category: data.category
+    };
     
-    setBudgetAllocations(prev => ({
-      savings: prev.savings + splits.savings,
-      wants: prev.wants + splits.wants,
-      needs: prev.needs + splits.needs
-    }));
+    if (data.type === "income") {
+      const splits = calculateIncomeSplits(data.amount);
+      setBudgetAllocations(prev => ({
+        savings: prev.savings + splits.savings,
+        wants: prev.wants + splits.wants,
+        needs: prev.needs + splits.needs
+      }));
+      
+      toast({
+        title: "تخصیص بودجه انجام شد",
+        description: `پس‌انداز: ${splits.savings.toLocaleString()} تومان\nخواسته‌ها: ${splits.wants.toLocaleString()} تومان\nنیازها: ${splits.needs.toLocaleString()} تومان`,
+      });
+    }
     
-    toast({
-      title: "تخصیص بودجه انجام شد",
-      description: `پس‌انداز: ${splits.savings.toLocaleString()} تومان\nخواسته‌ها: ${splits.wants.toLocaleString()} تومان\nنیازها: ${splits.needs.toLocaleString()} تومان`,
-    });
+    setShowTransactionDialog(false);
   };
   
   return (
@@ -111,11 +125,23 @@ export default function Finance() {
         <h1 className="text-3xl font-bold text-gray-900">امور مالی</h1>
         <Button 
           className="bg-lifeos-primary hover:bg-lifeos-secondary"
-          onClick={handleNewTransaction}
+          onClick={() => setShowTransactionDialog(true)}
         >
           تراکنش جدید
         </Button>
       </div>
+      
+      <Dialog open={showTransactionDialog} onOpenChange={setShowTransactionDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>تراکنش جدید</DialogTitle>
+          </DialogHeader>
+          <CreateTransactionForm
+            onSubmit={handleNewTransaction}
+            onCancel={() => setShowTransactionDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
