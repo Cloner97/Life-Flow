@@ -15,7 +15,8 @@ import { calculateIncomeSplits } from '@/utils/financeSplitting';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-const transactions = [
+// Initial transactions data
+const initialTransactions = [
   {
     id: 1,
     title: "حقوق ماهانه",
@@ -70,6 +71,9 @@ export default function Finance() {
   const [activeTab, setActiveTab] = useState("all");
   const { toast } = useToast();
   
+  // Use state for transactions
+  const [transactions, setTransactions] = useState(initialTransactions);
+  
   const [budgetAllocations, setBudgetAllocations] = useState({
     savings: 0,
     wants: 0,
@@ -95,17 +99,27 @@ export default function Finance() {
   const balance = totalIncome - totalExpenses;
   
   const handleNewTransaction = (data: any) => {
+    // Format the date as Persian date string (simple placeholder conversion)
+    const formattedDate = data.date ? 
+      `${data.date.getFullYear()}/${String(data.date.getMonth() + 1).padStart(2, '0')}/${String(data.date.getDate()).padStart(2, '0')}` : 
+      "تاریخ نامشخص";
+      
+    // Create the new transaction object
     const newTransaction = {
       id: transactions.length + 1,
       title: data.description,
-      amount: data.amount,
-      date: data.date,
+      amount: Number(data.amount),
+      date: formattedDate,
       isIncome: data.type === "income",
       category: data.category
     };
     
+    // Add the new transaction to our transactions array
+    setTransactions(prevTransactions => [...prevTransactions, newTransaction]);
+    
+    // Handle budget allocation if it's income
     if (data.type === "income") {
-      const splits = calculateIncomeSplits(data.amount);
+      const splits = calculateIncomeSplits(Number(data.amount));
       setBudgetAllocations(prev => ({
         savings: prev.savings + splits.savings,
         wants: prev.wants + splits.wants,
@@ -118,6 +132,13 @@ export default function Finance() {
       });
     }
     
+    // Show a confirmation toast for the new transaction
+    toast({
+      title: "تراکنش جدید ثبت شد",
+      description: `${data.description} با مبلغ ${Number(data.amount).toLocaleString()} تومان`
+    });
+    
+    // Close the dialog
     setShowTransactionDialog(false);
   };
   
