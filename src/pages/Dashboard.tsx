@@ -1,6 +1,11 @@
-import { Link } from 'react-router-dom';
+
 import { CalendarDays, ListTodo, ChartPie, Timer, Clock } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ModuleCard } from '@/components/dashboard/ModuleCard';
+import { ProjectCard } from '@/components/projects/ProjectCard';
+import { TransactionCard } from '@/components/finance/TransactionCard';
+import { ActivityCard } from '@/components/health/ActivityCard';
+import { ProgressBar } from '@/components/ui/ProgressBar';
 
 const modules = [
   {
@@ -9,7 +14,11 @@ const modules = [
     description: 'مدیریت پروژه‌های شخصی',
     icon: ListTodo,
     color: 'bg-lifeos-soft-green',
-    path: '/projects'
+    path: '/projects',
+    stats: [
+      { label: 'پروژه فعال', value: '3' },
+      { label: 'تکمیل شده', value: '12' }
+    ]
   },
   {
     id: 'finance',
@@ -17,7 +26,11 @@ const modules = [
     description: 'مدیریت مالی شخصی',
     icon: ChartPie,
     color: 'bg-lifeos-soft-yellow',
-    path: '/finance'
+    path: '/finance',
+    stats: [
+      { label: 'درآمد ماهانه', value: '۵.۲ میلیون' },
+      { label: 'هزینه ماهانه', value: '۳.۸ میلیون' }
+    ]
   },
   {
     id: 'health',
@@ -25,7 +38,11 @@ const modules = [
     description: 'سلامت جسمی و روحی',
     icon: Timer,
     color: 'bg-lifeos-soft-orange',
-    path: '/health'
+    path: '/health',
+    stats: [
+      { label: 'امتیاز سلامتی', value: '87/100' },
+      { label: 'فعالیت هفتگی', value: '4/7' }
+    ]
   },
   {
     id: 'growth',
@@ -33,7 +50,11 @@ const modules = [
     description: 'اهداف و یادگیری',
     icon: CalendarDays,
     color: 'bg-lifeos-soft-purple',
-    path: '/growth'
+    path: '/growth',
+    stats: [
+      { label: 'اهداف فعال', value: '5' },
+      { label: 'عادت‌های روزانه', value: '3' }
+    ]
   },
   {
     id: 'relationships',
@@ -41,43 +62,111 @@ const modules = [
     description: 'مدیریت روابط شخصی',
     icon: Clock,
     color: 'bg-lifeos-soft-pink',
-    path: '/relationships'
+    path: '/relationships',
+    stats: [
+      { label: 'افراد مهم', value: '8' },
+      { label: 'رویدادها', value: '2' }
+    ]
   }
 ];
 
 export default function Dashboard() {
   return (
-    <div className="container mx-auto p-4 animate-fade-in">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">زندگی او اس</h1>
-        <p className="text-gray-600 mt-2">خوش آمدید</p>
+    <div className="space-y-8 animate-fade-in">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">سلام، کاربر عزیز</h1>
+        <p className="text-gray-600 mt-1">خوش آمدید به زندگی او اس</p>
       </div>
-
-      <div className="grid grid-cols-4 gap-4 max-w-5xl mx-auto">
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {modules.map((module) => (
-          <Link
+          <ModuleCard
             key={module.id}
-            to={module.path}
-            className="group"
-          >
-            <div className={cn(
-              "aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300",
-              "hover:scale-[1.02] hover:shadow-lg",
-              module.color
-            )}>
-              <module.icon className="w-12 h-12 mb-3 text-gray-800" />
-              <h3 className="font-bold text-gray-900">{module.title}</h3>
-              <p className="text-xs text-gray-600 mt-1 line-clamp-2">{module.description}</p>
-            </div>
-          </Link>
-        ))}
-
-        {[...Array(15)].map((_, index) => (
-          <div 
-            key={`empty-${index}`}
-            className="aspect-square rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200"
+            title={module.title}
+            description={module.description}
+            path={module.path}
+            icon={module.icon}
+            color={module.color}
+            stats={module.stats}
           />
         ))}
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle className="text-lg">پروژه‌های اخیر</CardTitle>
+            <CardDescription>پروژه‌های فعال و در حال پیشرفت</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ProjectCard 
+              title="طراحی وب‌سایت شخصی" 
+              description="ساخت وب‌سایت نمونه کار با استفاده از React و Tailwind CSS" 
+              progress={75} 
+              deadline="۱۴۰۴/۰۲/۱۵"
+            />
+            <ProjectCard 
+              title="یادگیری زبان انگلیسی" 
+              description="رسیدن به سطح B2 تا پایان سال" 
+              progress={40} 
+              deadline="۱۴۰۴/۱۲/۲۹"
+            />
+          </CardContent>
+        </Card>
+        
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle className="text-lg">تراکنش‌های اخیر</CardTitle>
+            <CardDescription>گزارش مالی هفته اخیر</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <TransactionCard 
+              title="حقوق ماهانه" 
+              amount={5200000} 
+              date="۱۴۰۴/۰۱/۳۱" 
+              isIncome={true} 
+              category="درآمد"
+            />
+            <TransactionCard 
+              title="خرید مواد غذایی" 
+              amount={450000} 
+              date="۱۴۰۴/۰۲/۰۲" 
+              category="مواد غذایی"
+            />
+            <TransactionCard 
+              title="قبض برق" 
+              amount={185000} 
+              date="۱۴۰۴/۰۲/۰۵" 
+              category="قبوض"
+            />
+          </CardContent>
+        </Card>
+        
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle className="text-lg">فعالیت‌های سلامتی</CardTitle>
+            <CardDescription>فعالیت‌های ورزشی و سلامتی اخیر</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ActivityCard 
+              title="پیاده‌روی" 
+              duration="۴۵ دقیقه" 
+              date="امروز"
+              category="ورزش"
+            />
+            <ActivityCard 
+              title="مدیتیشن" 
+              duration="۱۵ دقیقه" 
+              date="دیروز"
+              category="سلامت روان"
+              color="bg-lifeos-soft-blue"
+            />
+            <div className="mt-4 pt-3 border-t">
+              <h4 className="text-sm font-medium mb-2">خلق و خوی هفتگی</h4>
+              <ProgressBar value={85} color="bg-lifeos-primary" showLabel />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
