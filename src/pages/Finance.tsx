@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { 
   Card, 
@@ -9,6 +10,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { TransactionCard } from '@/components/finance/TransactionCard';
+import { CreateTransactionForm } from '@/components/finance/CreateTransactionForm';
 import { calculateIncomeSplits } from '@/utils/financeSplitting';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
