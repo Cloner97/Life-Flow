@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { CreateContactDialog } from '@/components/relationships/CreateContactDialog';
 import { CreateEventDialog } from '@/components/relationships/CreateEventDialog';
 import { BackButton } from '@/components/ui/BackButton';
-import { BottomNavBar } from '@/components/layout/BottomNavBar';
 
 // Sample data
 const contacts = [
@@ -103,7 +102,7 @@ export default function Relationships() {
   };
   
   return (
-    <div className="space-y-6 animate-fade-in pb-16">
+    <div className="space-y-6 animate-fade-in">
       <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">روابط</h1>
@@ -252,7 +251,6 @@ export default function Relationships() {
           </div>
         </TabsContent>
       </Tabs>
-      <BottomNavBar />
     </div>
   );
 }

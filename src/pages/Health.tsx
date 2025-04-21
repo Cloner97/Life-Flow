@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { ActivityCard } from '@/components/health/ActivityCard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { BackButton } from '@/components/ui/BackButton';
-import { BottomNavBar } from '@/components/layout/BottomNavBar';
 
 // Sample data
 const activities = [
@@ -73,7 +72,7 @@ export default function Health() {
     : activities.filter(a => a.type === activeTab);
   
   return (
-    <div className="space-y-6 animate-fade-in pb-16">
+    <div className="space-y-6 animate-fade-in">
       <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">سلامتی</h1>
@@ -169,7 +168,6 @@ export default function Health() {
           </Tabs>
         </CardContent>
       </Card>
-      <BottomNavBar />
     </div>
   );
 }
