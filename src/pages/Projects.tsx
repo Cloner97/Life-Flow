@@ -13,8 +13,8 @@ import { ProjectCard } from '@/components/projects/ProjectCard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { CreateProjectDialog, Project } from '@/components/projects/CreateProjectDialog';
 import { toast } from "@/components/ui/sonner";
+import { BackButton } from '@/components/ui/BackButton';
 
-// نمونه داده‌ها
 const projectsData: Project[] = [
   {
     id: 1,
@@ -105,7 +105,7 @@ export default function Projects() {
     
     setProjects(updatedProjects);
     setSelectedProject(null);
-    toast.success("وضعیت پروژه با موفقیت به‌روزرسانی شد");
+    toast.success("وضعیت پروژه با موفقیت ��ه‌روزرسانی شد");
   };
   
   const handleTabChange = (value: string) => {
@@ -116,6 +116,7 @@ export default function Projects() {
   
   return (
     <div className="space-y-6 animate-fade-in">
+      <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">پروژه‌ها</h1>
         <Button 

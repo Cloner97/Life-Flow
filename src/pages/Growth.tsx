@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -11,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Badge } from "@/components/ui/badge";
+import { BackButton } from '@/components/ui/BackButton';
 
 // Sample data
 const goals = [
@@ -81,6 +81,7 @@ export default function Growth() {
   
   return (
     <div className="space-y-6 animate-fade-in">
+      <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">رشد فردی</h1>
         <Button className="bg-lifeos-primary hover:bg-lifeos-secondary">
