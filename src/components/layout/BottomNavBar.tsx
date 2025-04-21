@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { CalendarDays, Clock, ChartPie, Timer, Home } from 'lucide-react';
+import { CalendarDays, Clock, ListTodo, ChartPie, Timer, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -10,6 +10,12 @@ const navItems = [
     name: 'داشبورد',
     path: '/',
     icon: Home
+  },
+  {
+    id: 'projects',
+    name: 'پروژه‌ها',
+    path: '/projects',
+    icon: ListTodo
   },
   {
     id: 'finance',
