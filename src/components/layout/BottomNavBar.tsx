@@ -1,48 +1,39 @@
 
 import { Link, useLocation } from "react-router-dom";
-import { layoutDashboard, list, user, home, settings, arrowLeft } from "lucide-react";
+import { LayoutDashboard, List, User, Home, Settings, ArrowLeft } from "lucide-react";
 
 const navItems = [
   {
     label: "داشبورد",
-    icon: "home",
+    icon: Home,
     path: "/"
   },
   {
     label: "پروژه‌ها",
-    icon: "list",
+    icon: List,
     path: "/projects"
   },
   {
     label: "امور مالی",
-    icon: "layout-dashboard",
+    icon: LayoutDashboard,
     path: "/finance"
   },
   {
     label: "سلامتی",
-    icon: "user",
+    icon: User,
     path: "/health"
   },
   {
     label: "رشد فردی",
-    icon: "settings",
+    icon: Settings,
     path: "/growth"
   },
   {
     label: "روابط",
-    icon: "arrowLeft",
+    icon: ArrowLeft,
     path: "/relationships"
   }
 ];
-
-const iconComponents: Record<string, React.ElementType> = {
-  "layout-dashboard": require("lucide-react").LayoutDashboard,
-  "list": require("lucide-react").List,
-  "home": require("lucide-react").Home,
-  "settings": require("lucide-react").Settings,
-  "user": require("lucide-react").User,
-  "arrowLeft": require("lucide-react").ArrowLeft
-};
 
 export function BottomNavBar() {
   const location = useLocation();
@@ -50,7 +41,7 @@ export function BottomNavBar() {
   return (
     <nav className="fixed inset-x-0 bottom-0 bg-white border-t z-50 flex justify-around items-center py-2 md:hidden shadow whitespace-nowrap">
       {navItems.map((item) => {
-        const Icon = iconComponents[item.icon];
+        const Icon = item.icon;
         const isActive = location.pathname === item.path;
         return (
           <Link
