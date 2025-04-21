@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -9,9 +8,10 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button"; // Add this import
+import { Button } from "@/components/ui/button";
 import { CreateContactDialog } from '@/components/relationships/CreateContactDialog';
 import { CreateEventDialog } from '@/components/relationships/CreateEventDialog';
+import { BackButton } from '@/components/ui/BackButton';
 
 // Sample data
 const contacts = [
@@ -103,6 +103,7 @@ export default function Relationships() {
   
   return (
     <div className="space-y-6 animate-fade-in">
+      <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">روابط</h1>
         {activeTab === 'contacts' ? <CreateContactDialog /> : <CreateEventDialog />}

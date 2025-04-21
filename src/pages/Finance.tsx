@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Card, 
@@ -14,6 +13,7 @@ import { CreateTransactionForm } from '@/components/finance/CreateTransactionFor
 import { calculateIncomeSplits } from '@/utils/financeSplitting';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { BackButton } from '@/components/ui/BackButton';
 
 // Initial transactions data
 const initialTransactions = [
@@ -144,6 +144,7 @@ export default function Finance() {
   
   return (
     <div className="space-y-6 animate-fade-in">
+      <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">امور مالی</h1>
         <Button 
