@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { CalendarDays, ListTodo, ChartPie, Timer, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -53,8 +52,7 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-gray-900">زندگی او اس</h1>
         <p className="text-gray-600 mt-2">خوش آمدید</p>
       </div>
-      {/* منوی ماژول‌ها در بالا */}
-      <div className="overflow-x-auto pb-6">
+      <div className="overflow-x-auto pb-2">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-w-3xl mx-auto">
           {modules.map((module) => (
             <Link
@@ -75,8 +73,6 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-
-      {/* بخش گزارشات (به صورت دمو و قابل جایگزینی با گزارشات واقعی) */}
       <div className="mt-8">
         <div className="text-lg font-bold text-gray-800 mb-4">گزارشات کلی</div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

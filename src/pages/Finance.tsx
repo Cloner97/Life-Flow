@@ -14,8 +14,8 @@ import { calculateIncomeSplits } from '@/utils/financeSplitting';
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { BackButton } from '@/components/ui/BackButton';
+import { BottomNavBar } from '@/components/layout/BottomNavBar';
 
-// Initial transactions data
 const initialTransactions = [
   {
     id: 1,
@@ -71,7 +71,6 @@ export default function Finance() {
   const [activeTab, setActiveTab] = useState("all");
   const { toast } = useToast();
   
-  // Use state for transactions
   const [transactions, setTransactions] = useState(initialTransactions);
   
   const [budgetAllocations, setBudgetAllocations] = useState({
@@ -99,12 +98,10 @@ export default function Finance() {
   const balance = totalIncome - totalExpenses;
   
   const handleNewTransaction = (data: any) => {
-    // Format the date as Persian date string (simple placeholder conversion)
     const formattedDate = data.date ? 
       `${data.date.getFullYear()}/${String(data.date.getMonth() + 1).padStart(2, '0')}/${String(data.date.getDate()).padStart(2, '0')}` : 
       "تاریخ نامشخص";
       
-    // Create the new transaction object
     const newTransaction = {
       id: transactions.length + 1,
       title: data.description,
@@ -114,10 +111,8 @@ export default function Finance() {
       category: data.category
     };
     
-    // Add the new transaction to our transactions array
     setTransactions(prevTransactions => [...prevTransactions, newTransaction]);
     
-    // Handle budget allocation if it's income
     if (data.type === "income") {
       const splits = calculateIncomeSplits(Number(data.amount));
       setBudgetAllocations(prev => ({
@@ -132,18 +127,16 @@ export default function Finance() {
       });
     }
     
-    // Show a confirmation toast for the new transaction
     toast({
       title: "تراکنش جدید ثبت شد",
       description: `${data.description} با مبلغ ${Number(data.amount).toLocaleString()} تومان`
     });
     
-    // Close the dialog
     setShowTransactionDialog(false);
   };
   
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-16">
       <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">امور مالی</h1>
@@ -265,6 +258,7 @@ export default function Finance() {
           </Tabs>
         </CardContent>
       </Card>
+      <BottomNavBar />
     </div>
   );
 }

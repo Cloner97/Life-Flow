@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Badge } from "@/components/ui/badge";
 import { BackButton } from '@/components/ui/BackButton';
+import { BottomNavBar } from '@/components/layout/BottomNavBar';
 
 // Sample data
 const goals = [
@@ -80,7 +81,7 @@ export default function Growth() {
   const weekDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
   
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in pb-16">
       <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">رشد فردی</h1>
@@ -208,6 +209,7 @@ export default function Growth() {
           )}
         </TabsContent>
       </Tabs>
+      <BottomNavBar />
     </div>
   );
 }
