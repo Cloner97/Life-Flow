@@ -1,18 +1,9 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, Clock, ListTodo, ChartPie, Timer } from 'lucide-react';
+import { CalendarDays, Clock, ChartPie, Timer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const modules = [
-  {
-    id: 'projects',
-    name: 'پروژه‌ها',
-    description: 'مدیریت پروژه‌های شخصی',
-    icon: ListTodo,
-    color: 'bg-lifeos-soft-green',
-    path: '/projects'
-  },
   {
     id: 'finance',
     name: 'امور مالی',
