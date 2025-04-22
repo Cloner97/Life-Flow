@@ -22,7 +22,7 @@ const modules = [
   {
     id: 'growth',
     title: 'رشد فردی',
-    description: 'اهداف و یادگیری',
+    description: 'اهداف و روتین‌ها',
     emoji: '📈',
     color: 'bg-lifeos-soft-purple',
     path: '/growth'
@@ -144,7 +144,7 @@ export default function Dashboard() {
                 <span className="font-medium">{growthReports.completedTasks}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 text-sm">پروژه‌های در حال انجام:</span>
+                <span className="text-gray-600 text-sm">روتین‌های فعال:</span>
                 <span className="font-medium">{growthReports.ongoingProjects}</span>
               </div>
               <div className="flex justify-between">
