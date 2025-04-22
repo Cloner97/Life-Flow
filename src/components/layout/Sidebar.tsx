@@ -1,6 +1,6 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, Clock, ChartPie, Timer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const modules = [
@@ -8,7 +8,7 @@ const modules = [
     id: 'finance',
     name: 'امور مالی',
     description: 'مدیریت مالی شخصی',
-    icon: ChartPie,
+    emoji: '💰',
     color: 'bg-lifeos-soft-yellow',
     path: '/finance'
   },
@@ -16,7 +16,7 @@ const modules = [
     id: 'health',
     name: 'سلامتی',
     description: 'سلامت جسمی و روحی',
-    icon: Timer,
+    emoji: '💪',
     color: 'bg-lifeos-soft-orange',
     path: '/health'
   },
@@ -24,7 +24,7 @@ const modules = [
     id: 'growth',
     name: 'رشد فردی',
     description: 'اهداف و یادگیری',
-    icon: CalendarDays,
+    emoji: '📈',
     color: 'bg-lifeos-soft-purple',
     path: '/growth'
   },
@@ -32,7 +32,7 @@ const modules = [
     id: 'relationships',
     name: 'روابط',
     description: 'مدیریت روابط شخصی',
-    icon: Clock,
+    emoji: '👥',
     color: 'bg-lifeos-soft-pink',
     path: '/relationships'
   }
@@ -68,10 +68,7 @@ export function Sidebar() {
               className="flex items-center p-3 text-gray-700 rounded-lg hover:bg-gray-100"
             >
               <span className="p-2 rounded-lg bg-lifeos-soft-blue">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-800">
-                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
+                <span className="text-xl">🏠</span>
               </span>
               {!collapsed && <span className="mr-3">داشبورد</span>}
             </Link>
@@ -84,7 +81,7 @@ export function Sidebar() {
                 className="flex items-center p-3 text-gray-700 rounded-lg hover:bg-gray-100"
               >
                 <span className={cn("p-2 rounded-lg", module.color)}>
-                  <module.icon className="text-gray-800" size={20} />
+                  <span className="text-xl">{module.emoji}</span>
                 </span>
                 {!collapsed && <span className="mr-3">{module.name}</span>}
               </Link>
