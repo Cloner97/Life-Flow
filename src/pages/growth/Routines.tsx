@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { format, addDays, isSameDay } from 'date-fns';
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { SectionNavBar } from '@/components/layout/SectionNavBar';
 const weekDays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 const persianWeekDays = ['د', 'س', 'چ', 'پ', 'ج', 'ش', 'ی'];
 
-// Sample routine data
 const initialRoutines: RoutineData[] = [
   {
     id: '1',
@@ -51,7 +49,6 @@ const growthNavItems = [
   { name: "روتین‌ها", path: "routines", emoji: "🔄" },
 ];
 
-// Tags for filtering
 const tags = [
   { id: 'all', name: 'همه', color: 'bg-lifeos-soft-purple' },
   { id: 'habit', name: 'عادت', color: 'bg-white' },
@@ -65,8 +62,8 @@ export default function Routines() {
   const [routines, setRoutines] = useState<RoutineData[]>(initialRoutines);
   const [completedRoutines, setCompletedRoutines] = useState<Record<string, boolean>>({});
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [editingRoutineId, setEditingRoutineId] = useState<string | null>(null);
   
-  // Get start of the week (Monday)
   const getMondayOfCurrentWeek = (date: Date) => {
     const day = date.getDay();
     const diff = date.getDate() - day + (day === 0 ? -6 : 1);
@@ -75,10 +72,8 @@ export default function Routines() {
 
   const mondayOfWeek = getMondayOfCurrentWeek(new Date(selectedDate));
   
-  // Generate week days
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(mondayOfWeek, i));
   
-  // Filter routines by selected date and tag
   const filteredRoutines = routines.filter(routine => {
     const sameDay = isSameDay(routine.date, selectedDate);
     const matchesTag = selectedTag === 'all' || routine.tag === selectedTag;
@@ -87,6 +82,25 @@ export default function Routines() {
 
   const handleAddRoutine = (routine: RoutineData) => {
     setRoutines([...routines, routine]);
+  };
+
+  const handleEditRoutine = (routineId: string) => {
+    setEditingRoutineId(routineId);
+    setIsAddDialogOpen(true);
+  };
+
+  const handleUpdateRoutine = (updatedRoutine: RoutineData) => {
+    setRoutines(prevRoutines => 
+      prevRoutines.map(routine => 
+        routine.id === updatedRoutine.id ? updatedRoutine : routine
+      )
+    );
+    setEditingRoutineId(null);
+  };
+
+  const handleDialogClose = () => {
+    setIsAddDialogOpen(false);
+    setEditingRoutineId(null);
   };
 
   const handleToggleComplete = (routineId: string) => {
@@ -99,6 +113,10 @@ export default function Routines() {
   const handleSelectTag = (tagId: string) => {
     setSelectedTag(tagId);
   };
+
+  const editingRoutine = editingRoutineId 
+    ? routines.find(routine => routine.id === editingRoutineId)
+    : null;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -117,7 +135,6 @@ export default function Routines() {
       
       <SectionNavBar items={growthNavItems} baseRoute="/growth" />
       
-      {/* Date display section */}
       <div className="bg-lifeos-soft-purple bg-opacity-20 rounded-2xl p-4">
         <div className="flex justify-center mb-2">
           <h2 className="text-xl font-bold">
@@ -153,7 +170,6 @@ export default function Routines() {
         </div>
       </div>
       
-      {/* Tags filter */}
       <div className="flex overflow-x-auto py-2 space-x-2 rtl:space-x-reverse">
         {tags.map(tag => (
           <button
@@ -169,18 +185,19 @@ export default function Routines() {
         ))}
       </div>
       
-      {/* Routines list */}
       <div className="space-y-1">
         {filteredRoutines.length > 0 ? (
           filteredRoutines.map(routine => (
             <RoutineCard
               key={routine.id}
+              id={routine.id}
               title={routine.title}
               timeType={routine.timeType === 'all-day' ? 'All-Day' : routine.time || ''}
               icon={routine.icon}
               color={routine.color}
               isCompleted={!!completedRoutines[routine.id]}
               onToggleComplete={() => handleToggleComplete(routine.id)}
+              onEdit={handleEditRoutine}
             />
           ))
         ) : (
@@ -190,12 +207,12 @@ export default function Routines() {
         )}
       </div>
       
-      {/* Add routine dialog */}
       <AddRoutineDialog
         isOpen={isAddDialogOpen}
-        onClose={() => setIsAddDialogOpen(false)}
-        onAddRoutine={handleAddRoutine}
+        onClose={handleDialogClose}
+        onAddRoutine={editingRoutineId ? handleUpdateRoutine : handleAddRoutine}
         selectedDate={selectedDate}
+        editingRoutine={editingRoutine}
       />
     </div>
   );

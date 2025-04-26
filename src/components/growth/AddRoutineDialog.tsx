@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,9 +27,16 @@ interface AddRoutineDialogProps {
   onClose: () => void;
   onAddRoutine: (routine: RoutineData) => void;
   selectedDate?: Date;
+  editingRoutine?: RoutineData | null;
 }
 
-export function AddRoutineDialog({ isOpen, onClose, onAddRoutine, selectedDate = new Date() }: AddRoutineDialogProps) {
+export function AddRoutineDialog({ 
+  isOpen, 
+  onClose, 
+  onAddRoutine, 
+  selectedDate = new Date(),
+  editingRoutine 
+}: AddRoutineDialogProps) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState<Date | undefined>(selectedDate);
   const [repeat, setRepeat] = useState('daily');
@@ -39,7 +45,26 @@ export function AddRoutineDialog({ isOpen, onClose, onAddRoutine, selectedDate =
   const [reminder, setReminder] = useState(false);
   const [tag, setTag] = useState('habit');
 
-  // Tag to icon and color mapping
+  useEffect(() => {
+    if (editingRoutine) {
+      setTitle(editingRoutine.title);
+      setDate(editingRoutine.date);
+      setRepeat(editingRoutine.repeat);
+      setTimeType(editingRoutine.timeType);
+      setTime(editingRoutine.time || '');
+      setReminder(editingRoutine.reminder || false);
+      setTag(editingRoutine.tag);
+    } else {
+      setTitle('');
+      setDate(selectedDate);
+      setRepeat('daily');
+      setTimeType('all-day');
+      setTime('');
+      setReminder(false);
+      setTag('habit');
+    }
+  }, [editingRoutine, selectedDate]);
+
   const tagSettings: Record<string, {icon: string, color: string}> = {
     'habit': {icon: '🔄', color: 'bg-lifeos-soft-blue'},
     'health': {icon: '💪', color: 'bg-lifeos-soft-orange'},
@@ -51,8 +76,8 @@ export function AddRoutineDialog({ isOpen, onClose, onAddRoutine, selectedDate =
   const handleSubmit = () => {
     if (!title || !date) return;
     
-    const newRoutine: RoutineData = {
-      id: Date.now().toString(),
+    const routineData: RoutineData = {
+      id: editingRoutine?.id || Date.now().toString(),
       title,
       date,
       repeat,
@@ -64,23 +89,17 @@ export function AddRoutineDialog({ isOpen, onClose, onAddRoutine, selectedDate =
       color: tagSettings[tag]?.color || 'bg-gray-100'
     };
     
-    onAddRoutine(newRoutine);
+    onAddRoutine(routineData);
     onClose();
-    
-    // Reset form
-    setTitle('');
-    setRepeat('daily');
-    setTimeType('all-day');
-    setTime('');
-    setReminder(false);
-    setTag('habit');
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>افزودن روتین جدید</DialogTitle>
+          <DialogTitle>
+            {editingRoutine ? 'ویرایش روتین' : 'افزودن روتین جدید'}
+          </DialogTitle>
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
@@ -215,7 +234,7 @@ export function AddRoutineDialog({ isOpen, onClose, onAddRoutine, selectedDate =
             onClick={handleSubmit}
             className="bg-lifeos-primary hover:bg-lifeos-secondary"
           >
-            ذخیره
+            {editingRoutine ? 'به‌روزرسانی' : 'ذخیره'}
           </Button>
         </DialogFooter>
       </DialogContent>

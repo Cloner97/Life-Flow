@@ -1,23 +1,29 @@
 
 import React from 'react';
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Edit } from "lucide-react";
 
 interface RoutineCardProps {
+  id: string;
   title: string;
   timeType: string;
   icon: string;
   color: string;
   isCompleted?: boolean;
   onToggleComplete?: () => void;
+  onEdit?: (id: string) => void;
 }
 
 export function RoutineCard({ 
+  id,
   title, 
   timeType, 
   icon, 
   color,
   isCompleted = false,
-  onToggleComplete
+  onToggleComplete,
+  onEdit
 }: RoutineCardProps) {
   return (
     <div 
@@ -30,11 +36,21 @@ export function RoutineCard({
           <h3 className="text-lg font-semibold">{title}</h3>
         </div>
       </div>
-      <Checkbox 
-        checked={isCompleted}
-        onCheckedChange={onToggleComplete}
-        className="h-6 w-6 border-2 rounded-full"
-      />
+      <div className="flex items-center gap-2">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => onEdit?.(id)}
+          className="h-8 w-8"
+        >
+          <Edit className="h-4 w-4" />
+        </Button>
+        <Checkbox 
+          checked={isCompleted}
+          onCheckedChange={onToggleComplete}
+          className="h-6 w-6 border-2 rounded-full"
+        />
+      </div>
     </div>
   );
 }
