@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -33,6 +32,18 @@ import Medical from "./pages/health/Medical";
 import Contacts from "./pages/relationships/Contacts";
 import Events from "./pages/relationships/Events";
 
+// Growth Tools sub-pages
+import GoalJournal from "./pages/growth/tools/GoalJournal";
+import HabitTracker from "./pages/growth/tools/HabitTracker";
+import BulletJournal from "./pages/growth/tools/BulletJournal";
+import MindMapping from "./pages/growth/tools/MindMapping";
+import Microlearning from "./pages/growth/tools/Microlearning";
+import DecisionMaking from "./pages/growth/tools/DecisionMaking";
+import WeeklyReview from "./pages/growth/tools/WeeklyReview";
+import MeditationTool from "./pages/growth/tools/MeditationTool";
+import ThirtyDayChallenge from "./pages/growth/tools/ThirtyDayChallenge";
+import DailyScore from "./pages/growth/tools/DailyScore";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -57,6 +68,16 @@ const App = () => (
             <Route path="/growth/today" element={<Today />} />
             <Route path="/growth/tools" element={<Tools />} />
             <Route path="/growth/routines" element={<Routines />} />
+            <Route path="/growth/tools/goal-journal" element={<GoalJournal />} />
+            <Route path="/growth/tools/habit-tracker" element={<HabitTracker />} />
+            <Route path="/growth/tools/bullet-journal" element={<BulletJournal />} />
+            <Route path="/growth/tools/mind-mapping" element={<MindMapping />} />
+            <Route path="/growth/tools/microlearning" element={<Microlearning />} />
+            <Route path="/growth/tools/decision-making" element={<DecisionMaking />} />
+            <Route path="/growth/tools/weekly-review" element={<WeeklyReview />} />
+            <Route path="/growth/tools/meditation" element={<MeditationTool />} />
+            <Route path="/growth/tools/thirty-day-challenge" element={<ThirtyDayChallenge />} />
+            <Route path="/growth/tools/daily-score" element={<DailyScore />} />
             
             {/* Health routes */}
             <Route path="/health" element={<Health />} />
