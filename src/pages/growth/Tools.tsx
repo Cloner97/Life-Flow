@@ -4,6 +4,7 @@ import { SectionNavBar } from '@/components/layout/SectionNavBar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Book, Calendar, Clock, Star, Edit, Heart, List, FileText, PenIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const growthNavItems = [
   { name: "امروز", path: "today", emoji: "📅" },
@@ -133,8 +134,9 @@ export default function Tools() {
                     <Button 
                       variant="outline" 
                       className="w-full group-hover:bg-lifeos-primary group-hover:text-white transition-colors"
+                      asChild
                     >
-                      شروع
+                      <Link to={tool.href}>شروع</Link>
                     </Button>
                   </CardContent>
                 </Card>
