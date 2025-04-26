@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -60,8 +59,11 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto p-4 animate-fade-in">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">زندگی او اس</h1>
+        <h1 className="text-3xl font-bold text-gray-900">LIFE OS</h1>
         <p className="text-gray-600 mt-2">خوش آمدید</p>
+        <p className="text-sm text-gray-500 mt-4">
+          درصورت تمایل برای توسعه نرم افزار با بنده تماس بگیرید 09397897017
+        </p>
       </div>
       
       {/* منوی ماژول‌ها در بالا */}
