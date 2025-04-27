@@ -6,7 +6,7 @@ export default function Growth() {
   const navigate = useNavigate();
   
   useEffect(() => {
-    navigate('/growth/today');
+    navigate('/growth/routines');
   }, [navigate]);
   
   return null;

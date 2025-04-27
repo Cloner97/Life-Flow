@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { BackButton } from '@/components/ui/BackButton';
 import { SectionNavBar } from '@/components/layout/SectionNavBar';
@@ -8,9 +7,9 @@ import { AddRoutineDialog, RoutineData } from '@/components/growth/AddRoutineDia
 import { Plus } from 'lucide-react';
 
 const growthNavItems = [
-  { name: "امروز", path: "today", emoji: "📅" },
-  { name: "ابزارها", path: "tools", emoji: "🔧" },
   { name: "روتین‌ها", path: "routines", emoji: "🔄" },
+  { name: "ابزارها", path: "tools", emoji: "🔧" },
+  { name: "امروز", path: "today", emoji: "📅" },
 ];
 
 const defaultRoutines: RoutineData[] = [
