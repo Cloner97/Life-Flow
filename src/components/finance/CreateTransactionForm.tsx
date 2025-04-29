@@ -54,10 +54,20 @@ const transactionCategories = [
 ];
 
 export function CreateTransactionForm({ onSubmit, onCancel }: CreateTransactionFormProps) {
-  const [date, setDate] = useState<Date>();
-  const form = useForm<TransactionFormData>();
+  const [date, setDate] = useState<Date>(new Date());
+  
+  const form = useForm<TransactionFormData>({
+    defaultValues: {
+      type: "expense",
+      amount: 0,
+      description: "",
+      category: "",
+      date: new Date(),
+    }
+  });
 
-  const handleSubmit = (data: TransactionFormData) => {
+  const handleFormSubmit = (data: TransactionFormData) => {
+    // Make sure date is included in the submission
     onSubmit({
       ...data,
       date: date || new Date(),
@@ -66,7 +76,7 @@ export function CreateTransactionForm({ onSubmit, onCancel }: CreateTransactionF
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="date"
@@ -90,7 +100,10 @@ export function CreateTransactionForm({ onSubmit, onCancel }: CreateTransactionF
                   <Calendar
                     mode="single"
                     selected={date}
-                    onSelect={setDate}
+                    onSelect={(newDate) => {
+                      setDate(newDate || new Date());
+                      form.setValue("date", newDate || new Date());
+                    }}
                     initialFocus
                     className="p-3 pointer-events-auto"
                   />
@@ -130,7 +143,7 @@ export function CreateTransactionForm({ onSubmit, onCancel }: CreateTransactionF
           render={({ field }) => (
             <FormItem>
               <FormLabel>نوع تراکنش</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} defaultValue={field.value || "expense"}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="انتخاب نوع تراکنش" />
@@ -152,7 +165,12 @@ export function CreateTransactionForm({ onSubmit, onCancel }: CreateTransactionF
             <FormItem>
               <FormLabel>مبلغ (تومان)</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="مبلغ را وارد کنید" {...field} />
+                <Input 
+                  type="number" 
+                  placeholder="مبلغ را وارد کنید" 
+                  {...field} 
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
             </FormItem>
           )}

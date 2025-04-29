@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { CreateTransactionForm } from '@/components/finance/CreateTransactionForm';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { TransactionCard } from '@/components/finance/TransactionCard';
 
 const financeNavItems = [
   { name: "تراکنش ها", path: "transactions", emoji: "💳" },
@@ -15,12 +16,31 @@ const financeNavItems = [
   { name: "گزارشات", path: "reports", emoji: "📈" },
 ];
 
+export type Transaction = {
+  id: string;
+  date: Date;
+  category: string;
+  type: "income" | "expense";
+  amount: number;
+  description: string;
+};
+
 export default function Transactions() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const { toast } = useToast();
 
   const handleSubmit = (data: any) => {
-    console.log('New transaction:', data);
+    // Create a new transaction with a unique ID
+    const newTransaction: Transaction = {
+      ...data,
+      id: Date.now().toString(),
+    };
+    
+    // Add the transaction to the state
+    setTransactions(prevTransactions => [newTransaction, ...prevTransactions]);
+    
+    console.log('New transaction:', newTransaction);
     toast({
       title: "تراکنش با موفقیت ثبت شد",
       description: "تراکنش جدید به لیست تراکنش‌های شما اضافه شد.",
@@ -46,9 +66,24 @@ export default function Transactions() {
           <h2 className="text-xl font-semibold mb-4">تراکنش ها</h2>
           <p>لیست تراکنش های شما اینجا نمایش داده می‌شود.</p>
           
-          <div className="mt-4 text-center py-10 text-gray-500">
-            در حال بارگذاری تراکنش ها...
-          </div>
+          {transactions.length === 0 ? (
+            <div className="mt-4 text-center py-10 text-gray-500">
+              هیچ تراکنشی ثبت نشده است. برای شروع یک تراکنش جدید اضافه کنید.
+            </div>
+          ) : (
+            <div className="mt-4 space-y-4">
+              {transactions.map((transaction) => (
+                <TransactionCard
+                  key={transaction.id}
+                  title={transaction.description}
+                  amount={transaction.amount}
+                  date={transaction.date.toLocaleDateString('fa-IR')}
+                  isIncome={transaction.type === "income"}
+                  category={transaction.category}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
