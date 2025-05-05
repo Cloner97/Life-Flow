@@ -1,4 +1,3 @@
-
 import { BackButton } from '@/components/ui/BackButton';
 import { SectionNavBar } from '@/components/layout/SectionNavBar';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -7,9 +6,8 @@ import { Book, Calendar, Clock, Star, Edit, Heart, List, FileText, PenIcon } fro
 import { Link } from "react-router-dom";
 
 const growthNavItems = [
-  { name: "امروز", path: "today", emoji: "📅" },
-  { name: "ابزارها", path: "tools", emoji: "🔧" },
   { name: "روتین‌ها", path: "routines", emoji: "🔄" },
+  { name: "ابزارها", path: "tools", emoji: "🔧" },
 ];
 
 const tools = [

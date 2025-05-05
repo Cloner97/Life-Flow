@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,7 +19,6 @@ import Assets from "./pages/finance/Assets";
 import Reports from "./pages/finance/Reports";
 
 // Growth sub-pages
-import Today from "./pages/growth/Today";
 import Tools from "./pages/growth/Tools";
 import Routines from "./pages/growth/Routines";
 
@@ -65,7 +65,6 @@ const App = () => (
             
             {/* Growth routes */}
             <Route path="/growth" element={<Growth />} />
-            <Route path="/growth/today" element={<Today />} />
             <Route path="/growth/tools" element={<Tools />} />
             <Route path="/growth/routines" element={<Routines />} />
             <Route path="/growth/tools/goal-journal" element={<GoalJournal />} />

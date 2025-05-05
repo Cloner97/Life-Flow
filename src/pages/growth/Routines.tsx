@@ -46,7 +46,6 @@ const initialRoutines: RoutineData[] = [
 const growthNavItems = [
   { name: "روتین‌ها", path: "routines", emoji: "🔄" },
   { name: "ابزارها", path: "tools", emoji: "🔧" },
-  { name: "امروز", path: "today", emoji: "📅" },
 ];
 
 const tags = [
