@@ -5,7 +5,7 @@ import { SectionNavBar } from '@/components/layout/SectionNavBar';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { CreateTransactionForm } from '@/components/finance/CreateTransactionForm';
-import { Plus } from 'lucide-react';
+import { Plus, ReceiptText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { TransactionCard } from '@/components/finance/TransactionCard';
 
@@ -25,9 +25,37 @@ export type Transaction = {
   description: string;
 };
 
+// Sample transactions for demonstration
+const sampleTransactions: Transaction[] = [
+  {
+    id: '1',
+    date: new Date('2023-05-01'),
+    category: 'درآمد',
+    type: 'income',
+    amount: 5500000,
+    description: 'حقوق ماهانه',
+  },
+  {
+    id: '2',
+    date: new Date('2023-05-03'),
+    category: 'مواد غذایی',
+    type: 'expense',
+    amount: 850000,
+    description: 'خرید هفتگی',
+  },
+  {
+    id: '3',
+    date: new Date('2023-05-05'),
+    category: 'قبوض',
+    type: 'expense',
+    amount: 420000,
+    description: 'قبض برق',
+  }
+];
+
 export default function Transactions() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>(sampleTransactions);
   const { toast } = useToast();
 
   const handleSubmit = (data: any) => {
@@ -53,7 +81,7 @@ export default function Transactions() {
       <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">امور مالی</h1>
-        <Button onClick={() => setIsDialogOpen(true)}>
+        <Button onClick={() => setIsDialogOpen(true)} className="bg-green-600 hover:bg-green-700">
           <Plus className="ml-2 h-4 w-4" />
           تراکنش جدید
         </Button>
@@ -63,12 +91,31 @@ export default function Transactions() {
       
       <div className="grid gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm">
-          <h2 className="text-xl font-semibold mb-4">تراکنش ها</h2>
-          <p>لیست تراکنش های شما اینجا نمایش داده می‌شود.</p>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold flex items-center">
+              <ReceiptText className="mr-2 h-5 w-5 text-gray-600" />
+              تراکنش‌های اخیر
+            </h2>
+            
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                فیلتر
+              </Button>
+              <Button variant="outline" size="sm">
+                مرتب‌سازی
+              </Button>
+            </div>
+          </div>
           
           {transactions.length === 0 ? (
-            <div className="mt-4 text-center py-10 text-gray-500">
-              هیچ تراکنشی ثبت نشده است. برای شروع یک تراکنش جدید اضافه کنید.
+            <div className="mt-8 text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+              <ReceiptText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+              <h3 className="text-lg font-medium text-gray-900 mb-1">هیچ تراکنشی ثبت نشده است</h3>
+              <p className="text-gray-500 mb-4">برای شروع یک تراکنش جدید ثبت کنید.</p>
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <Plus className="ml-2 h-4 w-4" />
+                افزودن تراکنش
+              </Button>
             </div>
           ) : (
             <div className="mt-4 space-y-4">
@@ -101,3 +148,4 @@ export default function Transactions() {
     </div>
   );
 }
+
