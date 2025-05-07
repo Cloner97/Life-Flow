@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Bed, Clock, Sun, AlarmClock } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
 
 interface SleepClockProps {
   initialBedtime?: string;
@@ -37,137 +40,131 @@ export const SleepClock: React.FC<SleepClockProps> = ({
   
   // Check if sleep duration is optimal
   const isSleepOptimal = sleepDuration >= 7 && sleepDuration <= 9;
-
-  // Convert 24h format to 12h for display
-  const formatTimeFor12h = (time: string) => {
-    const [hours, minutes] = time.split(':').map(Number);
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12;
-    return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  
+  // Quality assessment based on duration
+  const getSleepQualityColor = () => {
+    if (sleepDuration >= 7 && sleepDuration <= 9) return 'bg-green-500';
+    if (sleepDuration >= 6 && sleepDuration < 7) return 'bg-yellow-500';
+    return 'bg-red-500';
   };
-
-  const getTomorrowDate = () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return 'فردا';
+  
+  const getSleepQualityText = () => {
+    if (sleepDuration >= 7 && sleepDuration <= 9) return 'عالی';
+    if (sleepDuration >= 6 && sleepDuration < 7) return 'متوسط';
+    return 'ناکافی';
   };
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="ios-card bg-zinc-900 text-white p-6 overflow-visible relative">
-        {/* Bedtime display */}
-        <div className="absolute top-6 left-6 text-center">
-          <div className="flex items-center justify-center mb-2 text-teal-400">
-            <Bed className="mr-1" size={20} />
-            <span className="font-semibold">زمان خواب</span>
-          </div>
-          <div className="text-4xl font-bold">{formatTimeFor12h(bedtime)}</div>
-          <div className="text-gray-400 text-sm">{getTomorrowDate()}</div>
+      <Card className="bg-white shadow-md p-6 overflow-visible relative">
+        <div className="text-center mb-6">
+          <h3 className="text-xl font-semibold text-gray-800">برنامه خواب من</h3>
+          <p className="text-gray-600">تنظیم برنامه خواب برای سلامتی بهتر</p>
         </div>
         
-        {/* Wake time display */}
-        <div className="absolute top-6 right-6 text-center">
-          <div className="flex items-center justify-center mb-2 text-teal-400">
-            <AlarmClock className="mr-1" size={20} />
-            <span className="font-semibold">زمان بیداری</span>
+        {/* New Sleep Input Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          {/* Bedtime Input */}
+          <div className="bg-lifeos-soft-purple bg-opacity-20 rounded-xl p-6">
+            <div className="flex items-center mb-4">
+              <div className="bg-lifeos-soft-purple p-2 rounded-full mr-2">
+                <Bed className="h-5 w-5 text-purple-700" />
+              </div>
+              <h4 className="font-semibold text-gray-800">زمان خواب</h4>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="bedtime" className="text-gray-600 mb-1 block">ساعت خواب</Label>
+                <Input
+                  id="bedtime"
+                  type="time"
+                  value={bedtime}
+                  onChange={(e) => setBedtime(e.target.value)}
+                  className="border-2 border-lifeos-soft-purple border-opacity-30 focus:border-purple-500"
+                />
+              </div>
+              <p className="text-sm text-gray-500">زمان توصیه شده برای خواب: ۱۰ الی ۱۱ شب</p>
+            </div>
           </div>
-          <div className="text-4xl font-bold">{formatTimeFor12h(wakeTime)}</div>
-          <div className="text-gray-400 text-sm">{getTomorrowDate()}</div>
+          
+          {/* Wake time Input */}
+          <div className="bg-lifeos-soft-blue bg-opacity-20 rounded-xl p-6">
+            <div className="flex items-center mb-4">
+              <div className="bg-lifeos-soft-blue p-2 rounded-full mr-2">
+                <AlarmClock className="h-5 w-5 text-blue-700" />
+              </div>
+              <h4 className="font-semibold text-gray-800">زمان بیداری</h4>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="waketime" className="text-gray-600 mb-1 block">ساعت بیداری</Label>
+                <Input
+                  id="waketime"
+                  type="time"
+                  value={wakeTime}
+                  onChange={(e) => setWakeTime(e.target.value)}
+                  className="border-2 border-lifeos-soft-blue border-opacity-30 focus:border-blue-500"
+                />
+              </div>
+              <p className="text-sm text-gray-500">زمان توصیه شده برای بیداری: ۶ الی ۷ صبح</p>
+            </div>
+          </div>
         </div>
         
-        {/* Clock visualization */}
-        <div className="flex justify-center pt-28 pb-10">
-          <div className="relative w-64 h-64">
-            {/* Main clock face */}
-            <div className="absolute top-0 left-0 right-0 bottom-0 bg-zinc-800 rounded-full border-4 border-zinc-700"></div>
+        {/* Sleep Duration Summary */}
+        <div className="bg-gray-50 rounded-xl p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="font-semibold text-gray-800">مدت زمان خواب</h4>
+            <span className="text-2xl font-bold">{formattedDuration}</span>
+          </div>
+          
+          <div className="space-y-3">
+            <div className="flex justify-between items-center text-sm">
+              <span>کیفیت خواب:</span>
+              <span className={`px-3 py-1 rounded-full text-white ${getSleepQualityColor()}`}>
+                {getSleepQualityText()}
+              </span>
+            </div>
             
-            {/* Clock markings */}
-            {[...Array(12)].map((_, i) => (
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div 
-                key={i}
-                className="absolute w-1 h-3 bg-gray-500"
-                style={{
-                  transform: `rotate(${i * 30}deg) translateY(-30.5px)`,
-                  transformOrigin: 'bottom center',
-                  left: 'calc(50% - 0.5px)',
-                  top: '0px'
-                }}
+                className={`${getSleepQualityColor()} h-2.5 rounded-full`}
+                style={{ width: `${Math.min(100, (sleepDuration / 10) * 100)}%` }}
               ></div>
+            </div>
+            
+            <p className={`text-sm ${isSleepOptimal ? 'text-green-600' : 'text-yellow-600'}`}>
+              {isSleepOptimal 
+                ? 'این برنامه با هدف خواب شما مطابقت دارد.' 
+                : 'برای سلامتی بهتر، ۷ تا ۹ ساعت خواب توصیه می‌شود.'}
+            </p>
+          </div>
+        </div>
+        
+        {/* Sleep Cycle Visualization */}
+        <div className="bg-gray-50 rounded-xl p-6">
+          <h4 className="font-semibold text-gray-800 mb-4">چرخه های خواب شما</h4>
+          <div className="flex justify-between items-center mb-2 text-xs text-gray-500">
+            <span>خواب سبک</span>
+            <span>خواب عمیق</span>
+            <span>خواب REM</span>
+          </div>
+          
+          <div className="space-y-2">
+            {[...Array(Math.floor(sleepDuration / 1.5))].map((_, i) => (
+              <div key={i} className="flex h-6 w-full overflow-hidden rounded-full">
+                <div className="bg-blue-200 w-1/3"></div>
+                <div className="bg-blue-400 w-1/3"></div>
+                <div className="bg-blue-600 w-1/3"></div>
+              </div>
             ))}
-            
-            {/* Clock labels */}
-            <div className="absolute top-4 left-0 right-0 text-center text-gray-300 text-sm font-semibold">12AM</div>
-            <div className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-300 text-sm font-semibold">6AM</div>
-            <div className="absolute bottom-4 left-0 right-0 text-center text-gray-300 text-sm font-semibold">
-              <span className="inline-block mr-1"><Sun size={14} className="text-yellow-400" /></span>
-              12PM
-            </div>
-            <div className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-300 text-sm font-semibold">6PM</div>
-            
-            {/* Indicators for 2, 4, 8, 10 */}
-            <div className="absolute top-[15%] right-[15%] text-gray-400">2</div>
-            <div className="absolute top-[30%] right-[7%] text-gray-400">4</div>
-            <div className="absolute bottom-[30%] right-[7%] text-gray-400">8</div>
-            <div className="absolute bottom-[15%] right-[15%] text-gray-400">10</div>
-            <div className="absolute top-[15%] left-[15%] text-gray-400">10</div>
-            <div className="absolute top-[30%] left-[7%] text-gray-400">8</div>
-            <div className="absolute bottom-[30%] left-[7%] text-gray-400">4</div>
-            <div className="absolute bottom-[15%] left-[15%] text-gray-400">2</div>
-            
-            {/* Sleep arc indicator */}
-            <div 
-              className="absolute top-0 left-0 w-full h-full rounded-full overflow-hidden"
-              style={{
-                clipPath: 'polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 50% 50%)'
-              }}
-            >
-              <div className="w-full h-full bg-black opacity-70"></div>
-            </div>
-            
-            {/* Bedtime indicator */}
-            <div className="absolute top-[12%] left-[50%] transform -translate-x-1/2">
-              <div className="text-teal-400">✨</div>
-            </div>
-            
-            {/* Wake time indicator */}
-            <div className="absolute bottom-[25%] right-[20%] transform rotate-90">
-              <div className="text-teal-400"><AlarmClock size={16} /></div>
-            </div>
           </div>
+          
+          <p className="text-sm text-gray-600 mt-4">
+            هر چرخه خواب حدود ۹۰ دقیقه طول می‌کشد. شما تقریباً {Math.floor(sleepDuration / 1.5)} چرخه خواب خواهید داشت.
+          </p>
         </div>
-        
-        {/* Sleep duration */}
-        <div className="text-center">
-          <div className="text-4xl font-bold">{Math.floor(sleepDuration)} ساعت</div>
-          <div className={`text-sm ${isSleepOptimal ? 'text-green-400' : 'text-yellow-400'}`}>
-            {isSleepOptimal 
-              ? 'این برنامه با هدف خواب شما مطابقت دارد.' 
-              : 'برای سلامتی بهتر، ۷ تا ۹ ساعت خواب توصیه می‌شود.'}
-          </div>
-        </div>
-        
-        {/* Time selectors (simplified for visual mockup) */}
-        <div className="flex justify-between mt-6">
-          <div className="bg-zinc-800 rounded-lg px-4 py-2">
-            <label className="block text-gray-400 text-xs mb-1">زمان خواب</label>
-            <input
-              type="time"
-              value={bedtime}
-              onChange={(e) => setBedtime(e.target.value)}
-              className="bg-transparent text-white"
-            />
-          </div>
-          <div className="bg-zinc-800 rounded-lg px-4 py-2">
-            <label className="block text-gray-400 text-xs mb-1">زمان بیداری</label>
-            <input
-              type="time"
-              value={wakeTime}
-              onChange={(e) => setWakeTime(e.target.value)}
-              className="bg-transparent text-white"
-            />
-          </div>
-        </div>
-      </div>
+      </Card>
     </div>
   );
 };
