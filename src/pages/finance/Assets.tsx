@@ -4,7 +4,6 @@ import { BackButton } from '@/components/ui/BackButton';
 import { SectionNavBar } from '@/components/layout/SectionNavBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { 
   Table, 
   TableBody, 
@@ -20,15 +19,10 @@ import {
   CardDescription, 
   CardContent 
 } from '@/components/ui/card';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
 import { Plus, Trash2, Coins, Wallet, WalletCards } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AddAssetForm } from '@/components/finance/AddAssetForm';
 
 // Navigation items
 const financeNavItems = [
@@ -39,7 +33,7 @@ const financeNavItems = [
 ];
 
 // Asset categories
-const assetCategories = [
+export const assetCategories = [
   { value: "cash", label: "نقد (پول، بانک)" },
   { value: "gold", label: "طلا و جواهرات" },
   { value: "vehicle", label: "خودرو" },
@@ -51,7 +45,7 @@ const assetCategories = [
 ];
 
 // Storage locations
-const storageLocations = [
+export const storageLocations = [
   { value: "bank", label: "بانک" },
   { value: "home", label: "منزل" },
   { value: "safe", label: "صندوق امانات" },
@@ -62,7 +56,7 @@ const storageLocations = [
 ];
 
 // Define interface for asset type
-interface Asset {
+export interface Asset {
   id: string;
   name: string;
   category: string;
@@ -74,17 +68,8 @@ interface Asset {
 
 export default function Assets() {
   const { toast } = useToast();
+  const [isAddAssetDialogOpen, setIsAddAssetDialogOpen] = useState(false);
   
-  // State for new asset form
-  const [newAsset, setNewAsset] = useState<Omit<Asset, 'id'>>({
-    name: '',
-    category: '',
-    location: '',
-    quantity: 1,
-    unit: '',
-    unitPrice: 0
-  });
-
   // State for assets list
   const [assets, setAssets] = useState<Asset[]>([]);
   
@@ -92,16 +77,7 @@ export default function Assets() {
   const [usdRate, setUsdRate] = useState<number>(50000);
   
   // Function to add new asset
-  const handleAddAsset = () => {
-    if (!newAsset.name || !newAsset.category || !newAsset.location || !newAsset.unit) {
-      toast({
-        title: "خطا",
-        description: "لطفاً تمامی فیلدها را پر کنید",
-        variant: "destructive",
-      });
-      return;
-    }
-    
+  const handleAddAsset = (newAsset: Omit<Asset, 'id'>) => {
     const asset: Asset = {
       id: crypto.randomUUID(),
       ...newAsset
@@ -109,20 +85,12 @@ export default function Assets() {
     
     setAssets([...assets, asset]);
     
-    // Reset form
-    setNewAsset({
-      name: '',
-      category: '',
-      location: '',
-      quantity: 1,
-      unit: '',
-      unitPrice: 0
-    });
-    
     toast({
       title: "موفق",
       description: "دارایی با موفقیت اضافه شد",
     });
+    
+    setIsAddAssetDialogOpen(false);
   };
   
   // Function to delete asset
@@ -178,6 +146,13 @@ export default function Assets() {
       <BackButton />
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">امور مالی</h1>
+        <Button 
+          className="bg-green-600 hover:bg-green-700"
+          onClick={() => setIsAddAssetDialogOpen(true)}
+        >
+          <Plus className="ml-2 h-4 w-4" />
+          افزودن دارایی
+        </Button>
       </div>
       
       <SectionNavBar items={financeNavItems} baseRoute="/finance" />
@@ -229,108 +204,6 @@ export default function Assets() {
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Add New Asset */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-xl">افزودن دارایی جدید</CardTitle>
-            <CardDescription>اطلاعات دارایی جدید خود را وارد کنید</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="asset-name">نام دارایی</Label>
-                <Input
-                  id="asset-name"
-                  placeholder="مثال: سکه بهار آزادی"
-                  value={newAsset.name}
-                  onChange={(e) => setNewAsset({...newAsset, name: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="asset-category">دسته‌بندی</Label>
-                <Select
-                  value={newAsset.category}
-                  onValueChange={(value) => setNewAsset({...newAsset, category: value})}
-                >
-                  <SelectTrigger id="asset-category">
-                    <SelectValue placeholder="انتخاب دسته‌بندی" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {assetCategories.map((category) => (
-                      <SelectItem key={category.value} value={category.value}>
-                        {category.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="asset-location">محل نگهداری</Label>
-                <Select
-                  value={newAsset.location}
-                  onValueChange={(value) => setNewAsset({...newAsset, location: value})}
-                >
-                  <SelectTrigger id="asset-location">
-                    <SelectValue placeholder="انتخاب محل نگهداری" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {storageLocations.map((location) => (
-                      <SelectItem key={location.value} value={location.value}>
-                        {location.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="asset-quantity">مقدار</Label>
-                <Input
-                  id="asset-quantity"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="مثال: 2.5"
-                  value={newAsset.quantity}
-                  onChange={(e) => setNewAsset({...newAsset, quantity: Number(e.target.value)})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="asset-unit">واحد</Label>
-                <Input
-                  id="asset-unit"
-                  placeholder="مثال: عدد، گرم، متر مربع"
-                  value={newAsset.unit}
-                  onChange={(e) => setNewAsset({...newAsset, unit: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="asset-price">قیمت واحد (تومان)</Label>
-                <Input
-                  id="asset-price"
-                  type="number"
-                  min="0"
-                  placeholder="مثال: 20000000"
-                  value={newAsset.unitPrice}
-                  onChange={(e) => setNewAsset({...newAsset, unitPrice: Number(e.target.value)})}
-                />
-              </div>
-            </div>
-            
-            <Button 
-              className="mt-4 w-full" 
-              onClick={handleAddAsset}
-            >
-              <Plus className="ml-2" />
-              افزودن دارایی
-            </Button>
           </CardContent>
         </Card>
 
@@ -398,6 +271,16 @@ export default function Assets() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Asset Add Dialog */}
+      <Dialog open={isAddAssetDialogOpen} onOpenChange={setIsAddAssetDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>افزودن دارایی جدید</DialogTitle>
+          </DialogHeader>
+          <AddAssetForm onSubmit={handleAddAsset} onCancel={() => setIsAddAssetDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
