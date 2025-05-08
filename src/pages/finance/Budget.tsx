@@ -4,9 +4,12 @@ import { BackButton } from '@/components/ui/BackButton';
 import { SectionNavBar } from '@/components/layout/SectionNavBar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { BudgetCategories } from '@/components/finance/budget/BudgetCategories';
 import { BudgetChart } from '@/components/finance/budget/BudgetChart';
 import { useBudgetCategories } from '@/hooks/useBudgetCategories';
+import { AddBudgetItemDialog, BudgetItem } from '@/components/finance/budget/AddBudgetItemDialog';
+import { CircleDollarSign, Plus } from 'lucide-react';
 
 const financeNavItems = [
   { name: "تراکنش ها", path: "transactions", emoji: "💳" },
@@ -17,7 +20,14 @@ const financeNavItems = [
 
 export default function Budget() {
   const [income, setIncome] = useState<number>(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { categories, setCategories, handleCategoryPercentageChange, handleSubcategoryPercentageChange, addSubcategory, removeSubcategory } = useBudgetCategories();
+
+  const handleAddBudgetItem = (item: Omit<BudgetItem, 'id'>) => {
+    // Here you would integrate the new budget item into your existing category structure
+    // For now, we'll just update the monthly income which is used for calculations
+    setIncome(prevIncome => prevIncome + item.amount);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -30,21 +40,31 @@ export default function Budget() {
       
       <div className="grid gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle>بودجه بندی</CardTitle>
-            <CardDescription>مدیریت بودجه و تخصیص منابع مالی</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>بودجه بندی</CardTitle>
+              <CardDescription>مدیریت بودجه و تخصیص منابع مالی</CardDescription>
+            </div>
+            <Button onClick={() => setIsDialogOpen(true)}>
+              <Plus className="ml-2 h-4 w-4" /> افزودن بودجه
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-1">درآمد ماهیانه (تومان)</label>
-              <Input 
-                type="number" 
-                value={income} 
-                onChange={(e) => setIncome(Number(e.target.value))}
-                placeholder="مبلغ درآمد ماهیانه خود را وارد کنید" 
-                className="max-w-md text-left ltr"
-                dir="ltr"
-              />
+              <div className="flex gap-2 max-w-md">
+                <Input 
+                  type="number" 
+                  value={income} 
+                  onChange={(e) => setIncome(Number(e.target.value))}
+                  placeholder="مبلغ درآمد ماهیانه خود را وارد کنید" 
+                  className="text-left ltr"
+                  dir="ltr"
+                />
+                <Button variant="outline">
+                  <CircleDollarSign className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             
             <div className="grid md:grid-cols-2 gap-8">
@@ -65,6 +85,13 @@ export default function Budget() {
           </CardContent>
         </Card>
       </div>
+
+      <AddBudgetItemDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onAddItem={handleAddBudgetItem}
+        categoryOptions={categories.map(category => ({ id: category.id, name: category.name }))}
+      />
     </div>
   );
 }
