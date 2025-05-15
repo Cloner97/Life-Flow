@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CircleDollarSign, SquareCheck, X } from 'lucide-react';
+import { CircleDollarSign, SquareCheck, X, Shirt, Utensils, CreditCard, Bus } from 'lucide-react';
 
 // Define the types for budget items
 export type BudgetItemType = 'need' | 'want' | 'savings';
@@ -26,12 +26,20 @@ interface AddBudgetItemDialogProps {
   categoryOptions: { id: string; name: string }[];
 }
 
+const iconOptions = [
+  { value: 'shirt', label: 'پوشاک', icon: <Shirt className="h-4 w-4" /> },
+  { value: 'utensils', label: 'خوراک', icon: <Utensils className="h-4 w-4" /> },
+  { value: 'credit-card', label: 'قسط', icon: <CreditCard className="h-4 w-4" /> },
+  { value: 'bus', label: 'حمل و نقل', icon: <Bus className="h-4 w-4" /> }
+];
+
 export function AddBudgetItemDialog({ open, onOpenChange, onAddItem, categoryOptions }: AddBudgetItemDialogProps) {
   const { toast } = useToast();
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [type, setType] = useState<BudgetItemType>('need');
+  const [icon, setIcon] = useState('shirt');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,6 +83,7 @@ export function AddBudgetItemDialog({ open, onOpenChange, onAddItem, categoryOpt
     setAmount('');
     setCategoryId('');
     setType('need');
+    setIcon('shirt');
     
     // Close dialog
     onOpenChange(false);
@@ -141,6 +150,25 @@ export function AddBudgetItemDialog({ open, onOpenChange, onAddItem, categoryOpt
                 <SelectItem value="need">نیاز</SelectItem>
                 <SelectItem value="want">خواسته</SelectItem>
                 <SelectItem value="savings">پس‌انداز</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="icon">آیکون</Label>
+            <Select value={icon} onValueChange={setIcon}>
+              <SelectTrigger id="icon">
+                <SelectValue placeholder="انتخاب آیکون" />
+              </SelectTrigger>
+              <SelectContent>
+                {iconOptions.map((iconOption) => (
+                  <SelectItem key={iconOption.value} value={iconOption.value}>
+                    <div className="flex items-center">
+                      {iconOption.icon}
+                      <span className="ml-2">{iconOption.label}</span>
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

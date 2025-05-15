@@ -21,11 +21,14 @@ const financeNavItems = [
 export default function Budget() {
   const [income, setIncome] = useState<number>(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { categories, setCategories, handleCategoryPercentageChange, handleSubcategoryPercentageChange, addSubcategory, removeSubcategory } = useBudgetCategories();
+  const { 
+    categories, 
+    handleCategoryPercentageChange,
+    removeCategory
+  } = useBudgetCategories();
 
   const handleAddBudgetItem = (item: Omit<BudgetItem, 'id'>) => {
-    // Here you would integrate the new budget item into your existing category structure
-    // For now, we'll just update the monthly income which is used for calculations
+    // Update income when a new budget item is added
     setIncome(prevIncome => prevIncome + item.amount);
   };
 
@@ -72,9 +75,7 @@ export default function Budget() {
                 categories={categories}
                 income={income}
                 onCategoryPercentageChange={handleCategoryPercentageChange}
-                onSubcategoryPercentageChange={handleSubcategoryPercentageChange}
-                onAddSubcategory={addSubcategory}
-                onRemoveSubcategory={removeSubcategory}
+                onRemoveCategory={removeCategory}
               />
               
               <BudgetChart 

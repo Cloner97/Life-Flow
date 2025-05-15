@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { PiggyBank, ShoppingBag, Wallet } from 'lucide-react';
+import { PiggyBank, Shirt, Utensils, CreditCard, Bus } from 'lucide-react';
 
 export interface BudgetSubcategory {
   id: string;
@@ -15,47 +14,57 @@ export interface BudgetCategory {
   icon: React.ReactNode;
   color: string;
   subcategories: BudgetSubcategory[];
+  type: 'need' | 'want' | 'savings';
 }
 
-const COLORS = ['#34d399', '#8b5cf6', '#f97316'];
+const COLORS = ['#34d399', '#8b5cf6', '#f97316', '#ec4899', '#06b6d4'];
 
 export function useBudgetCategories() {
   const [categories, setCategories] = useState<BudgetCategory[]>([
     {
       id: '1',
-      name: 'نیازها',
-      percentage: 50,
-      icon: <ShoppingBag className="h-5 w-5" />,
+      name: 'پوشاک',
+      percentage: 15,
+      icon: <Shirt className="h-5 w-5" />,
       color: COLORS[0],
-      subcategories: [
-        { id: '1-1', name: 'مسکن', percentage: 60 },
-        { id: '1-2', name: 'پوشاک', percentage: 20 },
-        { id: '1-3', name: 'خوراک', percentage: 20 },
-      ]
+      subcategories: [],
+      type: 'need'
     },
     {
       id: '2',
-      name: 'خواسته‌ها',
+      name: 'خوراک',
       percentage: 30,
-      icon: <Wallet className="h-5 w-5" />,
+      icon: <Utensils className="h-5 w-5" />,
       color: COLORS[1],
-      subcategories: [
-        { id: '2-1', name: 'تفریح', percentage: 50 },
-        { id: '2-2', name: 'هدیه', percentage: 30 },
-        { id: '2-3', name: 'سرگرمی', percentage: 20 },
-      ]
+      subcategories: [],
+      type: 'need'
     },
     {
       id: '3',
-      name: 'پس‌انداز',
+      name: 'قسط',
+      percentage: 25,
+      icon: <CreditCard className="h-5 w-5" />,
+      color: COLORS[2],
+      subcategories: [],
+      type: 'need'
+    },
+    {
+      id: '4',
+      name: 'حمل و نقل',
+      percentage: 10,
+      icon: <Bus className="h-5 w-5" />,
+      color: COLORS[3],
+      subcategories: [],
+      type: 'need'
+    },
+    {
+      id: '5',
+      name: 'پس انداز',
       percentage: 20,
       icon: <PiggyBank className="h-5 w-5" />,
-      color: COLORS[2],
-      subcategories: [
-        { id: '3-1', name: 'طلا', percentage: 40 },
-        { id: '3-2', name: 'دلار', percentage: 40 },
-        { id: '3-3', name: 'اوراق', percentage: 20 },
-      ]
+      color: COLORS[4],
+      subcategories: [],
+      type: 'savings'
     }
   ]);
 
@@ -203,12 +212,81 @@ export function useBudgetCategories() {
     });
   };
 
+  const addCategory = (name: string, type: 'need' | 'want' | 'savings', iconName: string) => {
+    setCategories(prevCategories => {
+      const newCategories = JSON.parse(JSON.stringify(prevCategories));
+      
+      // Generate a new icon based on the name
+      let icon;
+      let color = COLORS[Math.floor(Math.random() * COLORS.length)];
+      
+      switch(iconName) {
+        case 'shirt':
+          icon = <Shirt className="h-5 w-5" />;
+          break;
+        case 'utensils':
+          icon = <Utensils className="h-5 w-5" />;
+          break;
+        case 'credit-card':
+          icon = <CreditCard className="h-5 w-5" />;
+          break;
+        case 'bus':
+          icon = <Bus className="h-5 w-5" />;
+          break;
+        default:
+          icon = <PiggyBank className="h-5 w-5" />;
+      }
+      
+      // Adjust percentages for existing categories
+      const existingCount = newCategories.length;
+      const equalPercentage = 100 / (existingCount + 1);
+      
+      newCategories.forEach((c: BudgetCategory) => {
+        c.percentage = equalPercentage;
+      });
+      
+      // Add new category
+      newCategories.push({
+        id: `category-${Date.now()}`,
+        name,
+        percentage: equalPercentage,
+        icon,
+        color,
+        subcategories: [],
+        type
+      });
+      
+      return newCategories;
+    });
+    
+    return true;
+  };
+  
+  const removeCategory = (categoryId: string) => {
+    setCategories(prevCategories => {
+      const newCategories = prevCategories.filter(c => c.id !== categoryId);
+      
+      // Redistribute percentages
+      const count = newCategories.length;
+      if (count > 0) {
+        const equalPercentage = 100 / count;
+        newCategories.forEach(c => {
+          c.percentage = equalPercentage;
+        });
+      }
+      
+      return newCategories;
+    });
+  };
+
   return {
     categories,
     setCategories,
     handleCategoryPercentageChange,
     handleSubcategoryPercentageChange,
     addSubcategory,
-    removeSubcategory
+    removeSubcategory,
+    addCategory,
+    removeCategory
   };
 }
