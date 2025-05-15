@@ -10,6 +10,7 @@ import { BudgetChart } from '@/components/finance/budget/BudgetChart';
 import { useBudgetCategories } from '@/hooks/useBudgetCategories';
 import { AddBudgetItemDialog, BudgetItem } from '@/components/finance/budget/AddBudgetItemDialog';
 import { CircleDollarSign, Plus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const financeNavItems = [
   { name: "تراکنش ها", path: "transactions", emoji: "💳" },
@@ -19,17 +20,36 @@ const financeNavItems = [
 ];
 
 export default function Budget() {
+  const { toast } = useToast();
   const [income, setIncome] = useState<number>(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { 
     categories, 
     handleCategoryPercentageChange,
-    removeCategory
+    removeCategory,
+    addCategory
   } = useBudgetCategories();
 
   const handleAddBudgetItem = (item: Omit<BudgetItem, 'id'>) => {
     // Update income when a new budget item is added
     setIncome(prevIncome => prevIncome + item.amount);
+    
+    // Check if the selected category exists or needs to be created
+    const categoryExists = categories.some(category => category.id === item.categoryId);
+    
+    if (!categoryExists) {
+      // If the category doesn't exist, let's create it
+      toast({
+        title: 'خطا',
+        description: 'دسته‌بندی انتخاب شده یافت نشد',
+        variant: 'destructive',
+      });
+    }
+    
+    toast({
+      title: 'موفق',
+      description: `بودجه ${item.name} با موفقیت اضافه شد`,
+    });
   };
 
   return (

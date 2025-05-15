@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CircleDollarSign, SquareCheck, X, Shirt, Utensils, CreditCard, Bus } from 'lucide-react';
+import { useBudgetCategories } from '@/hooks/useBudgetCategories';
 
 // Define the types for budget items
 export type BudgetItemType = 'need' | 'want' | 'savings';
@@ -41,6 +42,19 @@ export function AddBudgetItemDialog({ open, onOpenChange, onAddItem, categoryOpt
   const [type, setType] = useState<BudgetItemType>('need');
   const [icon, setIcon] = useState('shirt');
 
+  const { addCategory } = useBudgetCategories();
+
+  // Reset form when dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      setName('');
+      setAmount('');
+      setCategoryId('');
+      setType('need');
+      setIcon('shirt');
+    }
+  }, [open]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -61,37 +75,35 @@ export function AddBudgetItemDialog({ open, onOpenChange, onAddItem, categoryOpt
       });
       return;
     }
-    
+
+    // If no categoryId is selected, create a new category
     if (!categoryId) {
-      toast({
-        title: 'خطا',
-        description: 'لطفاً دسته‌بندی بودجه را انتخاب کنید',
-        variant: 'destructive',
+      const newCategoryId = `category-${Date.now()}`;
+      
+      // Create new category with the same name as the budget item
+      addCategory(name, type, icon);
+      
+      // Use the newly created category
+      const newItem = {
+        name,
+        amount: Number(amount),
+        categoryId: newCategoryId,
+        type,
+      };
+      
+      onAddItem(newItem);
+    } else {
+      // Use existing category
+      onAddItem({
+        name,
+        amount: Number(amount),
+        categoryId,
+        type,
       });
-      return;
     }
-
-    onAddItem({
-      name,
-      amount: Number(amount),
-      categoryId,
-      type,
-    });
-
-    // Clear form
-    setName('');
-    setAmount('');
-    setCategoryId('');
-    setType('need');
-    setIcon('shirt');
     
     // Close dialog
     onOpenChange(false);
-    
-    toast({
-      title: 'موفق',
-      description: 'بودجه جدید با موفقیت اضافه شد',
-    });
   };
 
   return (
@@ -131,6 +143,7 @@ export function AddBudgetItemDialog({ open, onOpenChange, onAddItem, categoryOpt
                 <SelectValue placeholder="انتخاب دسته‌بندی" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="">دسته جدید</SelectItem>
                 {categoryOptions.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
