@@ -68,6 +68,15 @@ export function useBudgetCategories() {
     }
   ]);
 
+  // Function to create a deep copy of categories without using JSON.stringify/parse
+  const deepCopyCategories = (cats: BudgetCategory[]): BudgetCategory[] => {
+    return cats.map(cat => ({
+      ...cat,
+      subcategories: [...cat.subcategories],
+      // Don't try to clone the icon React element, just keep the reference
+    }));
+  };
+
   const handleCategoryPercentageChange = (categoryId: string, value: number[]) => {
     const newValue = value[0];
     
@@ -79,15 +88,15 @@ export function useBudgetCategories() {
     
     // If increasing this category, decrease others proportionally
     setCategories(prevCategories => {
-      // Deep copy categories
-      const newCategories = JSON.parse(JSON.stringify(prevCategories));
+      // Create a clean deep copy without using JSON methods
+      const newCategories = deepCopyCategories(prevCategories);
       
       if (diff > 0) {
         // Decreasing other categories proportionally
-        const otherCategories = newCategories.filter((c: BudgetCategory) => c.id !== categoryId);
-        const otherTotalPercentage = otherCategories.reduce((sum: number, c: BudgetCategory) => sum + c.percentage, 0);
+        const otherCategories = newCategories.filter(c => c.id !== categoryId);
+        const otherTotalPercentage = otherCategories.reduce((sum, c) => sum + c.percentage, 0);
         
-        otherCategories.forEach((c: BudgetCategory) => {
+        otherCategories.forEach(c => {
           if (otherTotalPercentage > 0) {
             const decreaseRatio = diff * (c.percentage / otherTotalPercentage);
             c.percentage = Math.max(0, c.percentage - decreaseRatio);
@@ -96,16 +105,16 @@ export function useBudgetCategories() {
       }
       
       // Update target category
-      const targetCategory = newCategories.find((c: BudgetCategory) => c.id === categoryId);
+      const targetCategory = newCategories.find(c => c.id === categoryId);
       if (targetCategory) {
         targetCategory.percentage = newValue;
       }
       
       // Normalize to ensure sum is 100
-      const totalPercentage = newCategories.reduce((sum: number, c: BudgetCategory) => sum + c.percentage, 0);
+      const totalPercentage = newCategories.reduce((sum, c) => sum + c.percentage, 0);
       if (totalPercentage !== 100) {
         const adjustmentFactor = 100 / totalPercentage;
-        newCategories.forEach((c: BudgetCategory) => {
+        newCategories.forEach(c => {
           c.percentage *= adjustmentFactor;
         });
       }
@@ -118,22 +127,22 @@ export function useBudgetCategories() {
     const newValue = value[0];
     
     setCategories(prevCategories => {
-      const newCategories = JSON.parse(JSON.stringify(prevCategories));
-      const categoryIndex = newCategories.findIndex((c: BudgetCategory) => c.id === categoryId);
+      const newCategories = deepCopyCategories(prevCategories);
+      const categoryIndex = newCategories.findIndex(c => c.id === categoryId);
       if (categoryIndex === -1) return prevCategories;
       
       const category = newCategories[categoryIndex];
-      const subcategory = category.subcategories.find((s: BudgetSubcategory) => s.id === subcategoryId);
+      const subcategory = category.subcategories.find(s => s.id === subcategoryId);
       if (!subcategory) return prevCategories;
       
       const diff = newValue - subcategory.percentage;
       
       if (diff > 0) {
         // Decreasing other subcategories proportionally
-        const otherSubcategories = category.subcategories.filter((s: BudgetSubcategory) => s.id !== subcategoryId);
-        const otherTotalPercentage = otherSubcategories.reduce((sum: number, s: BudgetSubcategory) => sum + s.percentage, 0);
+        const otherSubcategories = category.subcategories.filter(s => s.id !== subcategoryId);
+        const otherTotalPercentage = otherSubcategories.reduce((sum, s) => sum + s.percentage, 0);
         
-        otherSubcategories.forEach((s: BudgetSubcategory) => {
+        otherSubcategories.forEach(s => {
           if (otherTotalPercentage > 0) {
             const decreaseRatio = diff * (s.percentage / otherTotalPercentage);
             s.percentage = Math.max(0, s.percentage - decreaseRatio);
@@ -145,10 +154,10 @@ export function useBudgetCategories() {
       subcategory.percentage = newValue;
       
       // Normalize to ensure sum is 100
-      const totalSubPercentage = category.subcategories.reduce((sum: number, s: BudgetSubcategory) => sum + s.percentage, 0);
+      const totalSubPercentage = category.subcategories.reduce((sum, s) => sum + s.percentage, 0);
       if (totalSubPercentage !== 100) {
         const adjustmentFactor = 100 / totalSubPercentage;
-        category.subcategories.forEach((s: BudgetSubcategory) => {
+        category.subcategories.forEach(s => {
           s.percentage *= adjustmentFactor;
         });
       }
@@ -163,8 +172,8 @@ export function useBudgetCategories() {
     }
 
     setCategories(prevCategories => {
-      const newCategories = JSON.parse(JSON.stringify(prevCategories));
-      const categoryIndex = newCategories.findIndex((c: BudgetCategory) => c.id === categoryId);
+      const newCategories = deepCopyCategories(prevCategories);
+      const categoryIndex = newCategories.findIndex(c => c.id === categoryId);
       if (categoryIndex === -1) return prevCategories;
       
       const category = newCategories[categoryIndex];
@@ -173,7 +182,7 @@ export function useBudgetCategories() {
       const existingCount = category.subcategories.length;
       if (existingCount > 0) {
         const newPercentage = 100 / (existingCount + 1);
-        category.subcategories.forEach((s: BudgetSubcategory) => {
+        category.subcategories.forEach(s => {
           s.percentage = newPercentage;
         });
       }
@@ -193,17 +202,17 @@ export function useBudgetCategories() {
 
   const removeSubcategory = (categoryId: string, subcategoryId: string) => {
     setCategories(prevCategories => {
-      const newCategories = JSON.parse(JSON.stringify(prevCategories));
-      const categoryIndex = newCategories.findIndex((c: BudgetCategory) => c.id === categoryId);
+      const newCategories = deepCopyCategories(prevCategories);
+      const categoryIndex = newCategories.findIndex(c => c.id === categoryId);
       if (categoryIndex === -1) return prevCategories;
       
       const category = newCategories[categoryIndex];
-      category.subcategories = category.subcategories.filter((s: BudgetSubcategory) => s.id !== subcategoryId);
+      category.subcategories = category.subcategories.filter(s => s.id !== subcategoryId);
       
       // Redistribute percentages
       const count = category.subcategories.length;
       if (count > 0) {
-        category.subcategories.forEach((s: BudgetSubcategory) => {
+        category.subcategories.forEach(s => {
           s.percentage = 100 / count;
         });
       }
@@ -214,7 +223,7 @@ export function useBudgetCategories() {
 
   const addCategory = (name: string, type: 'need' | 'want' | 'savings', iconName: string) => {
     setCategories(prevCategories => {
-      const newCategories = JSON.parse(JSON.stringify(prevCategories));
+      const newCategories = deepCopyCategories(prevCategories);
       
       // Generate a new icon based on the name
       let icon;
@@ -241,7 +250,7 @@ export function useBudgetCategories() {
       const existingCount = newCategories.length;
       const equalPercentage = 100 / (existingCount + 1);
       
-      newCategories.forEach((c: BudgetCategory) => {
+      newCategories.forEach(c => {
         c.percentage = equalPercentage;
       });
       
