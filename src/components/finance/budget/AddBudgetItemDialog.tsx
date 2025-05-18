@@ -77,7 +77,7 @@ export function AddBudgetItemDialog({ open, onOpenChange, onAddItem, categoryOpt
     }
 
     // If no categoryId is selected, create a new category
-    if (!categoryId) {
+    if (!categoryId || categoryId === "new-category") {
       const newCategoryId = `category-${Date.now()}`;
       
       // Create new category with the same name as the budget item
@@ -143,7 +143,7 @@ export function AddBudgetItemDialog({ open, onOpenChange, onAddItem, categoryOpt
                 <SelectValue placeholder="انتخاب دسته‌بندی" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">دسته جدید</SelectItem>
+                <SelectItem value="new-category">دسته جدید</SelectItem>
                 {categoryOptions.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}

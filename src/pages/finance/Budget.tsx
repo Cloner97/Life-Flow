@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { BackButton } from '@/components/ui/BackButton';
 import { SectionNavBar } from '@/components/layout/SectionNavBar';
@@ -40,9 +39,8 @@ export default function Budget() {
     if (!categoryExists) {
       // If the category doesn't exist, let's create it
       toast({
-        title: 'خطا',
-        description: 'دسته‌بندی انتخاب شده یافت نشد',
-        variant: 'destructive',
+        title: 'موفق',
+        description: 'دسته‌بندی جدید با موفقیت ایجاد شد',
       });
     }
     
