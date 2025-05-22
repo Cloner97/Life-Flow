@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { format, addDays, isSameDay } from 'date-fns';
+
+import { useState, useEffect } from 'react';
+import { format, addDays, isSameDay, isYesterday } from 'date-fns';
 import { Button } from "@/components/ui/button";
 import { BackButton } from '@/components/ui/BackButton';
 import { RoutineCard } from '@/components/growth/RoutineCard';
 import { AddRoutineDialog, RoutineData } from '@/components/growth/AddRoutineDialog';
-import { Plus } from 'lucide-react';
+import { Plus, AlertCircle } from 'lucide-react';
 import { SectionNavBar } from '@/components/layout/SectionNavBar';
+import { useToast } from "@/hooks/use-toast";
 
 const weekDays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 const persianWeekDays = ['د', 'س', 'چ', 'پ', 'ج', 'ش', 'ی'];
@@ -19,7 +21,13 @@ const initialRoutines: RoutineData[] = [
     timeType: 'all-day',
     tag: 'work',
     icon: '🔊',
-    color: 'bg-blue-100'
+    color: 'bg-blue-100',
+    hasQuantity: true,
+    quantity: 2,
+    quantityUnit: 'hour',
+    monthlyGoal: 40,
+    progress: 12,
+    trackMissed: true
   },
   {
     id: '2',
@@ -29,7 +37,8 @@ const initialRoutines: RoutineData[] = [
     timeType: 'all-day',
     tag: 'habit',
     icon: '🐕',
-    color: 'bg-green-100'
+    color: 'bg-green-100',
+    hasQuantity: false
   },
   {
     id: '3',
@@ -39,7 +48,12 @@ const initialRoutines: RoutineData[] = [
     timeType: 'all-day',
     tag: 'health',
     icon: '🥇',
-    color: 'bg-pink-100'
+    color: 'bg-pink-100',
+    hasQuantity: true,
+    quantity: 1,
+    quantityUnit: 'hour',
+    monthlyGoal: 30,
+    progress: 8
   }
 ];
 
@@ -56,6 +70,7 @@ const tags = [
 ];
 
 export default function Routines() {
+  const { toast } = useToast();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTag, setSelectedTag] = useState('all');
   const [routines, setRoutines] = useState<RoutineData[]>(initialRoutines);
@@ -78,6 +93,23 @@ export default function Routines() {
     const matchesTag = selectedTag === 'all' || routine.tag === selectedTag;
     return sameDay && matchesTag;
   });
+
+  useEffect(() => {
+    // Check for missed routines from yesterday
+    const yesterdayRoutines = routines.filter(routine => {
+      return isYesterday(routine.date) && routine.trackMissed && !completedRoutines[routine.id];
+    });
+    
+    if (yesterdayRoutines.length > 0) {
+      yesterdayRoutines.forEach(routine => {
+        toast({
+          title: "روتین انجام نشده",
+          description: `روتین "${routine.title}" دیروز انجام نشده است.`,
+          variant: "destructive",
+        });
+      });
+    }
+  }, []);
 
   const handleAddRoutine = (routine: RoutineData) => {
     setRoutines([...routines, routine]);
@@ -111,6 +143,14 @@ export default function Routines() {
 
   const handleSelectTag = (tagId: string) => {
     setSelectedTag(tagId);
+  };
+  
+  const handleProgressUpdate = (routineId: string, progress: number) => {
+    setRoutines(prevRoutines => 
+      prevRoutines.map(routine => 
+        routine.id === routineId ? { ...routine, progress } : routine
+      )
+    );
   };
 
   const editingRoutine = editingRoutineId 
@@ -195,8 +235,14 @@ export default function Routines() {
               icon={routine.icon}
               color={routine.color}
               isCompleted={!!completedRoutines[routine.id]}
+              hasQuantity={routine.hasQuantity}
+              quantity={routine.quantity}
+              quantityUnit={routine.quantityUnit}
+              progress={routine.progress || 0}
+              monthlyGoal={routine.monthlyGoal}
               onToggleComplete={() => handleToggleComplete(routine.id)}
               onEdit={handleEditRoutine}
+              onProgressUpdate={handleProgressUpdate}
             />
           ))
         ) : (

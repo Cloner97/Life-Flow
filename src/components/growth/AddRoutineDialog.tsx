@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -7,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon, Clock, Bell, Tag, List } from "lucide-react";
+import { CalendarIcon, Clock, Bell, Tag, List, Timer } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 export interface RoutineData {
   id: string;
@@ -20,6 +22,12 @@ export interface RoutineData {
   tag: string;
   icon: string;
   color: string;
+  hasQuantity: boolean;
+  quantity?: number;
+  quantityUnit?: string;
+  trackMissed?: boolean;
+  monthlyGoal?: number;
+  progress?: number;
 }
 
 interface AddRoutineDialogProps {
@@ -44,6 +52,11 @@ export function AddRoutineDialog({
   const [time, setTime] = useState('');
   const [reminder, setReminder] = useState(false);
   const [tag, setTag] = useState('habit');
+  const [hasQuantity, setHasQuantity] = useState(false);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [quantityUnit, setQuantityUnit] = useState('hour');
+  const [trackMissed, setTrackMissed] = useState(false);
+  const [monthlyGoal, setMonthlyGoal] = useState<number>(0);
 
   useEffect(() => {
     if (editingRoutine) {
@@ -54,6 +67,11 @@ export function AddRoutineDialog({
       setTime(editingRoutine.time || '');
       setReminder(editingRoutine.reminder || false);
       setTag(editingRoutine.tag);
+      setHasQuantity(editingRoutine.hasQuantity || false);
+      setQuantity(editingRoutine.quantity || 1);
+      setQuantityUnit(editingRoutine.quantityUnit || 'hour');
+      setTrackMissed(editingRoutine.trackMissed || false);
+      setMonthlyGoal(editingRoutine.monthlyGoal || 0);
     } else {
       setTitle('');
       setDate(selectedDate);
@@ -62,6 +80,11 @@ export function AddRoutineDialog({
       setTime('');
       setReminder(false);
       setTag('habit');
+      setHasQuantity(false);
+      setQuantity(1);
+      setQuantityUnit('hour');
+      setTrackMissed(false);
+      setMonthlyGoal(0);
     }
   }, [editingRoutine, selectedDate]);
 
@@ -86,7 +109,13 @@ export function AddRoutineDialog({
       reminder,
       tag,
       icon: tagSettings[tag]?.icon || '📝',
-      color: tagSettings[tag]?.color || 'bg-gray-100'
+      color: tagSettings[tag]?.color || 'bg-gray-100',
+      hasQuantity,
+      quantity: hasQuantity ? quantity : undefined,
+      quantityUnit: hasQuantity ? quantityUnit : undefined,
+      trackMissed,
+      monthlyGoal: hasQuantity ? monthlyGoal : undefined,
+      progress: editingRoutine?.progress || 0
     };
     
     onAddRoutine(routineData);
@@ -225,6 +254,73 @@ export function AddRoutineDialog({
                 <SelectItem value="social">اجتماعی</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right flex gap-2 items-center">
+              <Timer className="h-4 w-4" />
+              مقدار دهی
+            </Label>
+            <div className="flex items-center space-x-2 rtl:space-x-reverse col-span-3">
+              <Switch 
+                id="has-quantity"
+                checked={hasQuantity}
+                onCheckedChange={setHasQuantity}
+              />
+              <Label htmlFor="has-quantity">فعال</Label>
+            </div>
+          </div>
+          
+          {hasQuantity && (
+            <>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="quantity" className="text-right">مقدار</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  className="col-span-1"
+                />
+                <Select value={quantityUnit} onValueChange={setQuantityUnit}>
+                  <SelectTrigger className="col-span-2">
+                    <SelectValue placeholder="واحد" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hour">ساعت</SelectItem>
+                    <SelectItem value="minute">دقیقه</SelectItem>
+                    <SelectItem value="count">تعداد</SelectItem>
+                    <SelectItem value="page">صفحه</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="monthly-goal" className="text-right">هدف ماهانه</Label>
+                <Input
+                  id="monthly-goal"
+                  type="number"
+                  min="0"
+                  value={monthlyGoal}
+                  onChange={(e) => setMonthlyGoal(Number(e.target.value))}
+                  className="col-span-1"
+                />
+                <span className="col-span-2 text-gray-500 text-sm">{quantityUnit}</span>
+              </div>
+            </>
+          )}
+          
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label className="text-right">پیگیری روتین‌های از دست رفته</Label>
+            <div className="flex items-center space-x-2 rtl:space-x-reverse col-span-3">
+              <Switch 
+                id="track-missed"
+                checked={trackMissed}
+                onCheckedChange={setTrackMissed}
+              />
+              <Label htmlFor="track-missed">فعال</Label>
+            </div>
           </div>
         </div>
         
